@@ -1,0 +1,10 @@
+﻿prefix=@CMAKE_INSTALL_PREFIX@  
+exec_prefix=${prefix}  
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+
+Name: CaraReport  
+Description: A C++ error reporting framework  
+Version: @CARAREPORT_VERSION@  
+Libs: -L${libdir} -lCaraReport  
+Cflags: -I${includedir}

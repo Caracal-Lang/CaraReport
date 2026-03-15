@@ -1,0 +1,41 @@
+﻿{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 30,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "hidden": true,
+      "architecture": {
+        "strategy": "external",
+        "value": "x64"
+      },
+      "binaryDir": "${sourceDir}/bin/${presetName}",
+      "generator": "Ninja",
+      "name": "basePreset",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CARAREPORT_BUILD_TESTS": "OFF",
+        "CARAREPORT_BUILD_EXAMPLE": "OFF"
+      }
+    },
+    {
+      "name": "x64 Debug",
+      "inherits": "basePreset",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "description": "Debug build for x64"
+    },
+    {
+      "name": "x64 Release",
+      "inherits": "basePreset",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      },
+      "description": "Release build for x64"
+    }
+  ]
+}
