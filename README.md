@@ -14,6 +14,8 @@ CaraReport is a lightweight C++ reporting library mainly designed for Caracal. I
 
 ## Example
 
+<img src="Assets/readme-example.png" alt="Readme Example" />
+
 ```cpp
 #include <CaraReport.h>
 
