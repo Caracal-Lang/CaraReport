@@ -14,7 +14,7 @@ namespace CaraReport
         , m_title(other.m_title)
         , m_url(other.m_url)
         , m_message(other.m_message)
-        , m_source(std::make_unique<Source>(*other.m_source))
+        , m_source(other.m_source ? std::make_unique<Source>(*other.m_source) : nullptr)
         , m_labels(other.m_labels)
         , m_fix(other.m_fix)
         , m_related(other.m_related)
@@ -32,7 +32,7 @@ namespace CaraReport
         m_title = other.m_title;
         m_url = other.m_url;
         m_message = other.m_message;
-        m_source = std::make_unique<Source>(*other.m_source);
+        m_source = (other.m_source ? std::make_unique<Source>(*other.m_source) : nullptr);
         m_labels = other.m_labels;
         m_fix = other.m_fix;
         m_related = other.m_related;
