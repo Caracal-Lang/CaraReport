@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
+#include <utility>
 
 #if defined(_WIN32) || defined(_WIN64)
 #ifndef NOMINMAX
@@ -13,10 +14,305 @@
 
 namespace CaraReport
 {
+    [[nodiscard]] static LabelColorMap buildColorMap(const std::vector<Label>& labels, const Label* primaryLabel)
+    {
+        // build color map: primary gets 0, rest get 1, 2, 3...
+        LabelColorMap colorMap;
+        colorMap[primaryLabel] = 0;
+        int nextColor = 1;
+        for (const auto& label : labels)
+        {
+            if (&label != primaryLabel && !colorMap.contains(&label))
+            {
+                colorMap[&label] = nextColor++;
+            }
+        }
+
+        return colorMap;
+    }
+
+    [[nodiscard]] static int lineNumberWidth(const std::vector<LineInfo>& lines)
+    {
+        if (lines.empty())
+        {
+            return 1;
+        }
+
+        int maxLine = lines.back().lineNumber;
+        int width = 0;
+        while (maxLine > 0)
+        {
+            ++width;
+            maxLine /= 10;
+        }
+
+        return std::max(width, 1);
+    }
+
+    [[nodiscard]] static std::string padLeft(const std::string& text, int width)
+    {
+        int contentSize = static_cast<int>(text.size());
+        int padding = width - contentSize;
+        if (padding <= 0)
+        {
+            return text;
+        }
+
+        return std::string(padding, ' ') + text;
+    }
+
+    [[nodiscard]] static std::string expandTabs(const std::string& text, int tabWidth)
+    {
+        std::string result;
+        for (char c : text)
+        {
+            if (c == '\t')
+            {
+                const auto tab = static_cast<size_t>(tabWidth);
+                const auto spaces = tab - (result.size() % tab);
+                result.append(spaces, ' ');
+            }
+            else
+            {
+                result += c;
+            }
+        }
+
+        return result;
+    }
+
+    [[nodiscard]] static int offsetToDisplayColumn(
+        const std::string& text,
+        int offset,
+        int tabWidth)
+    {
+        if (offset <= 0)
+        {
+            return 0;
+        }
+
+        int column = 0;
+        const auto limit = static_cast<size_t>(offset);
+        for (size_t i = 0; i < limit && i < text.size(); ++i)
+        {
+            if (text[i] == '\t')
+            {
+                column += tabWidth - (column % tabWidth);
+            }
+            else
+            {
+                ++column;
+            }
+        }
+
+        return column;
+    }
+
+    [[nodiscard]] static int calculateFrameWidth(const std::vector<ContextBlock>& blocks)
+    {
+        int frameWidth = 1;
+        for (const auto& block : blocks)
+        {
+            frameWidth = std::max(frameWidth, lineNumberWidth(block.contents.lines));
+        }
+
+        return frameWidth;
+    }
+
+    [[nodiscard]] static int calculateMaxColumn(const std::vector<Highlight>& highlights)
+    {
+        int maxColumn = 0;
+        for (const auto& highlight : highlights)
+        {
+            maxColumn = std::max(maxColumn, highlight.endColumn);
+        }
+
+        return maxColumn;
+    }
+
+    [[nodiscard]] static const Label* findPrimaryLabel(const std::vector<Label>& labels)
+    {
+        if (labels.empty())
+        {
+            return nullptr;
+        }
+
+        for (const auto& label : labels)
+        {
+            if (label.isPrimary())
+            {
+                return &label;
+            }
+        }
+
+        return labels.data();
+    }
+
+    [[nodiscard]] static std::vector<ContextBlock> buildBlocksForLabels(
+        const Source* source,
+        const std::vector<Label>& labels,
+        int contextLines)
+    {
+        // merge overlapping contexts into one block
+        std::vector<ContextBlock> blocks;
+        for (const auto& label : labels)
+        {
+            const auto optionalContent = source->readSpan(label.span(), contextLines, contextLines);
+            if (!optionalContent.has_value())
+            {
+                continue;
+            }
+
+            const auto& content = optionalContent.value();
+            if (!blocks.empty())
+            {
+                auto& lastBlock = blocks.back();
+                auto& lastBlockLines = lastBlock.contents.lines;
+                const auto& newBlockLines = content.lines;
+
+                // check for overlap and adjacency
+                if (!lastBlockLines.empty()
+                    && !newBlockLines.empty()
+                    && newBlockLines.front().lineNumber <= lastBlockLines.back().lineNumber + 1)
+                {
+                    for (const auto& newBlockLine : newBlockLines)
+                    {
+                        bool found = false;
+                        for (const auto& lastBlockLine : lastBlockLines)
+                        {
+                            if (lastBlockLine.lineNumber == newBlockLine.lineNumber)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            lastBlockLines.push_back(newBlockLine);
+                        }
+                    }
+
+                    std::ranges::sort(lastBlockLines,
+                        [](const LineInfo& lhs, const LineInfo& rhs)
+                        {
+                            return lhs.lineNumber < rhs.lineNumber;
+                        });
+
+                    lastBlock.blockLabels.push_back(&label);
+                    continue;
+                }
+            }
+
+            ContextBlock block;
+            block.contents = content;
+            block.blockLabels.push_back(&label);
+            blocks.push_back(std::move(block));
+        }
+
+        return blocks;
+    }
+
+    [[nodiscard]] static Highlight buildHighlight(const LineInfo& line, const Label& label, int tabWidth)
+    {
+        Highlight result{};
+        result.label = &label;
+        result.kind = HighlightKind::None;
+        result.startColumn = 0;
+        result.endColumn = 0;
+
+        const auto labelStart = label.start();
+        const auto labelEnd = label.end();
+        const auto lineStart = line.start;
+        const auto lineEnd = line.start + line.length;
+
+        if (labelEnd <= lineStart || labelStart >= lineEnd + 1)
+        {
+            if (label.length() == 0 && labelStart == lineEnd)
+            {
+                result.kind = HighlightKind::Full;
+                result.startColumn = offsetToDisplayColumn(line.text, line.length, tabWidth);
+                result.endColumn = result.startColumn + 1;
+                return result;
+            }
+            return result;
+        }
+
+        const auto startsHere = labelStart >= lineStart && labelStart <= lineEnd;
+        const auto endsHere = labelEnd > lineStart && labelEnd <= lineEnd + 1;
+
+        if (startsHere && endsHere)
+        {
+            result.kind = HighlightKind::Full;
+            const auto localStart = labelStart - lineStart;
+            const auto localEnd = labelEnd - lineStart;
+            result.startColumn = offsetToDisplayColumn(line.text, localStart, tabWidth);
+            result.endColumn = offsetToDisplayColumn(line.text, std::min(localEnd, line.length), tabWidth);
+
+            if (result.endColumn <= result.startColumn)
+            {
+                result.endColumn = result.startColumn + 1;
+            }
+        }
+        else if (startsHere)
+        {
+            result.kind = HighlightKind::Start;
+            const auto localStart = labelStart - lineStart;
+            result.startColumn = offsetToDisplayColumn(line.text, localStart, tabWidth);
+            result.endColumn = static_cast<int>(expandTabs(line.text, tabWidth).size());
+        }
+        else if (endsHere)
+        {
+            result.kind = HighlightKind::End;
+            result.startColumn = 0;
+            const auto localEnd = labelEnd - lineStart;
+            result.endColumn = offsetToDisplayColumn(line.text, std::min(localEnd, line.length), tabWidth);
+        }
+        else
+        {
+            result.kind = HighlightKind::Middle;
+            result.startColumn = 0;
+            result.endColumn = static_cast<int>(expandTabs(line.text, tabWidth).size());
+        }
+
+        return result;
+    }
+
+    [[nodiscard]] static std::vector<Highlight> buildHighlights(
+        const LineInfo& line,
+        const std::vector<const Label*>& labels,
+        int tabWidth)
+    {
+        std::vector<Highlight> highlights;
+        for (const auto* const label : labels)
+        {
+            const auto highlight = buildHighlight(line, *label, tabWidth);
+            if (highlight.kind != HighlightKind::None)
+            {
+                highlights.push_back(highlight);
+            }
+        }
+
+        return highlights;
+    }
+
+    [[nodiscard]] static std::vector<Highlight> filterSingleLineHighlights(
+        const std::vector<Highlight>& highlights)
+    {
+        std::vector<Highlight> singleLineHighlights;
+        for (const auto& highlight : highlights)
+        {
+            if (highlight.kind == HighlightKind::Full)
+            {
+                singleLineHighlights.push_back(highlight);
+            }
+        }
+
+        return singleLineHighlights;
+    }
+
     Writer::Writer() 
         : m_theme(std::make_unique<Theme>())
-        , m_contextLines(2)
-        , m_tabWidth(4)
         , m_colorsEnabled(colorsEnabled())
         , m_ansiSupported(enableUtf8AndAnsi())
     {
@@ -33,8 +329,10 @@ namespace CaraReport
 
     Writer& Writer::operator=(const Writer& other)
     {
-        if (this == &other)
+        if (this == &other) 
+        {
             return *this;
+        }
 
         m_theme = std::make_unique<Theme>(*other.m_theme);
         m_contextLines = other.m_contextLines;
@@ -47,7 +345,7 @@ namespace CaraReport
 
     Writer Writer::create()
     {
-        return Writer();
+        return {};
     }
 
     Writer& Writer::withTheme(std::unique_ptr<Theme>&& theme)
@@ -70,8 +368,11 @@ namespace CaraReport
 
     Writer& Writer::withUnicode(bool enable)
     {
-        if (!enable && m_theme->isUnicode())
+        if (!enable && m_theme->isUnicode()) 
+        {
             m_theme = Theme::ascii();
+        }
+
         return *this;
     }
 
@@ -167,28 +468,13 @@ namespace CaraReport
 
         auto index = 0;
         const auto it = colorMap.find(label);
-        if (it != colorMap.end())
+        if (it != colorMap.end()) 
+        {
             index = it->second;
+        }
 
         const auto& palette = m_theme->labelPalette();
         return palette[index % palette.size()];
-    }
-
-    LabelColorMap Writer::buildColorMap(const std::vector<Label>& labels, const Label* primaryLabel) const
-    {
-        // build color map: primary gets 0, rest get 1, 2, 3...
-        LabelColorMap colorMap;
-        colorMap[primaryLabel] = 0;
-        int nextColor = 1;
-        for (const auto& label : labels)
-        {
-            if (&label != primaryLabel && colorMap.find(&label) == colorMap.end())
-            {
-                colorMap[&label] = nextColor++;
-            }
-        }
-
-        return colorMap;
     }
 
     std::vector<std::string> Writer::buildColumnColors(
@@ -212,274 +498,6 @@ namespace CaraReport
         return columnColors;
     }
 
-    int Writer::lineNumberWidth(const std::vector<LineInfo>& lines) const
-    {
-        if (lines.empty())
-        {
-            return 1;
-        }
-
-        int maxLine = lines.back().lineNumber;
-        int width = 0;
-        while (maxLine > 0)
-        {
-            ++width;
-            maxLine /= 10;
-        }
-
-        return std::max(width, 1);
-    }
-
-    std::string Writer::padLeft(const std::string& text, int width) const
-    {
-        int contentSize = text.size();
-        int padding = width - contentSize;
-        if (padding <= 0)
-        {
-            return text;
-        }
-
-        return std::string(padding, ' ') + text;
-    }
-
-    std::string Writer::expandTabs(const std::string& text) const
-    {
-        std::string result;
-        for (char c : text)
-        {
-            if (c == '\t')
-            {
-                int spaces = m_tabWidth - (result.size() % m_tabWidth);
-                result.append(spaces, ' ');
-            }
-            else
-            {
-                result += c;
-            }
-        }
-
-        return result;
-    }
-
-    int Writer::offsetToDisplayColumn(
-        const std::string& text,
-        int offset) const
-    {
-        int column = 0;
-        for (int i = 0; i < offset && i < text.size(); ++i)
-        {
-            if (text[i] == '\t')
-            {
-                column += m_tabWidth - (column % m_tabWidth);
-            }
-            else
-            {
-                ++column;
-            }
-        }
-
-        return column;
-    }
-
-    int Writer::calculateFrameWidth(const std::vector<ContextBlock>& blocks) const
-    {
-        int frameWidth = 1;
-        for (const auto& block : blocks)
-        {
-            frameWidth = std::max(frameWidth, lineNumberWidth(block.contents.lines));
-        }
-
-        return frameWidth;
-    }
-
-    int Writer::calculateMaxColumn(const std::vector<Highlight>& highlights) const
-    {
-        int maxColumn = 0;
-        for (const auto& highlight : highlights)
-        {
-            maxColumn = std::max(maxColumn, highlight.endColumn);
-        }
-
-        return maxColumn;
-    }
-
-    const Label* Writer::findPrimaryLabel(const std::vector<Label>& labels) const
-    {
-        if(labels.empty())
-        {
-            return nullptr;
-        }
-
-        for (const auto& label : labels)
-        {
-            if (label.isPrimary())
-            {
-                return &label;
-            }
-        }
-
-        return &labels[0];
-    }
-
-    std::vector<ContextBlock> Writer::buildBlocksForLabels(
-        const Source* source, 
-        const std::vector<Label>& labels) const
-    {
-        // merge overlapping contexts into one block
-        std::vector<ContextBlock> blocks;
-        for (const auto& label : labels)
-        {
-            const auto optionalContent = source->readSpan(label.span(), m_contextLines, m_contextLines);
-            if (!optionalContent.has_value())
-            {
-                continue;
-            }
-
-            const auto& content = optionalContent.value();
-            if (!blocks.empty())
-            {
-                auto& lastBlock = blocks.back();
-                auto& lastBlockLines = lastBlock.contents.lines;
-                auto& newBlockLines = content.lines;
-
-                // check for overlap and adjacency
-                if (!lastBlockLines.empty()
-                    && !newBlockLines.empty()
-                    && newBlockLines.front().lineNumber <= lastBlockLines.back().lineNumber + 1)
-                {
-                    for (const auto& newBlockLine : newBlockLines)
-                    {
-                        bool found = false;
-                        for (const auto& lastBlockLine : lastBlockLines)
-                        {
-                            if (lastBlockLine.lineNumber == newBlockLine.lineNumber)
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (!found)
-                        {
-                            lastBlockLines.push_back(newBlockLine);
-                        }
-                    }
-
-                    std::sort(lastBlockLines.begin(), lastBlockLines.end(),
-                        [](const LineInfo& lhs, const LineInfo& rhs)
-                        {
-                            return lhs.lineNumber < rhs.lineNumber;
-                        });
-
-                    lastBlock.blockLabels.push_back(&label);
-                    continue;
-                }
-            }
-
-            ContextBlock block;
-            block.contents = content;
-            block.blockLabels.push_back(&label);
-            blocks.push_back(std::move(block));
-        }
-
-        return blocks;
-    }
-
-    std::vector<Highlight> Writer::buildHighlights(
-        const LineInfo& line, 
-        const std::vector<const Label*>& labels) const
-    {
-        std::vector<Highlight> highlights;
-        for (const auto label : labels)
-        {
-            const auto highlight = buildHighlight(line, *label);
-            if (highlight.kind != HighlightKind::None)
-                highlights.push_back(highlight);
-        }
-
-        return highlights;
-    }
-
-    Highlight Writer::buildHighlight(const LineInfo& line, const Label& label) const
-    {
-        Highlight result{};
-        result.label = &label;
-        result.kind = HighlightKind::None;
-        result.startColumn = 0;
-        result.endColumn = 0;
-
-        const auto labelStart = label.start();
-        const auto labelEnd = label.end();
-        const auto lineStart = line.start;
-        const auto lineEnd = line.start + line.length;
-
-        if (labelEnd <= lineStart || labelStart >= lineEnd + 1)
-        {
-            if (label.length() == 0 && labelStart == lineEnd)
-            {
-                result.kind = HighlightKind::Full;
-                result.startColumn = offsetToDisplayColumn(line.text, line.length);
-                result.endColumn = result.startColumn + 1;
-                return result;
-            }
-            return result;
-        }
-
-        const auto startsHere = labelStart >= lineStart && labelStart <= lineEnd;
-        const auto endsHere = labelEnd > lineStart && labelEnd <= lineEnd + 1;
-
-        if (startsHere && endsHere)
-        {
-            result.kind = HighlightKind::Full;
-            const auto localStart = labelStart - lineStart;
-            const auto localEnd = labelEnd - lineStart;
-            result.startColumn = offsetToDisplayColumn(line.text, localStart);
-            result.endColumn = offsetToDisplayColumn(line.text, std::min(localEnd, line.length));
-
-            if (result.endColumn <= result.startColumn)
-            {
-                result.endColumn = result.startColumn + 1;
-            }
-        }
-        else if (startsHere)
-        {
-            result.kind = HighlightKind::Start;
-            const auto localStart = labelStart - lineStart;
-            result.startColumn = offsetToDisplayColumn(line.text, localStart);
-            result.endColumn = expandTabs(line.text).size();
-        }
-        else if (endsHere)
-        {
-            result.kind = HighlightKind::End;
-            result.startColumn = 0;
-            const auto localEnd = labelEnd - lineStart;
-            result.endColumn = offsetToDisplayColumn(line.text, std::min(localEnd, line.length));
-        }
-        else
-        {
-            result.kind = HighlightKind::Middle;
-            result.startColumn = 0;
-            result.endColumn = expandTabs(line.text).size();
-        }
-
-        return result;
-    }
-
-    std::vector<Highlight> Writer::filterSingleLineHighlights(
-        const std::vector<Highlight>& highlights) const
-    {
-        std::vector<Highlight> singleLineHighlights;
-        for (const auto& highlight : highlights)
-        {
-            if (highlight.kind == HighlightKind::Full)
-            {
-                singleLineHighlights.push_back(highlight);
-            }
-        }
-
-        return singleLineHighlights;
-    }
-
     void Writer::writeReport(
         std::ostringstream& outStream, 
         const Report& report, 
@@ -496,7 +514,7 @@ namespace CaraReport
         const Report& report) const
     {
         // title line
-        const auto optionalTitle = report.title();
+        const auto& optionalTitle = report.title();
         if (optionalTitle.has_value())
         {
             const auto& title = optionalTitle.value();
@@ -512,7 +530,7 @@ namespace CaraReport
             }
 
             outStream << titleColor() << title << reset();
-            const auto optionalUrl = report.url();
+            const auto& optionalUrl = report.url();
             if (optionalUrl)
             {
                 const auto& url = optionalUrl.value();
@@ -527,7 +545,7 @@ namespace CaraReport
 
     void Writer::writeSource(std::ostringstream& outStream, const Report& report) const
     {
-        const auto source = report.source();
+        const auto* source = report.source();
         if (source == nullptr)
         {
             return;
@@ -539,18 +557,19 @@ namespace CaraReport
             return;
         }
 
-        std::sort(labelList.begin(), labelList.end(),
+        std::ranges::sort(labelList,
             [](const Label& lhs, const Label& rhs)
             { 
                 return lhs.start() < rhs.start(); 
             });
 
-        const auto primaryLabel = findPrimaryLabel(labelList);
+        const auto* primaryLabel = findPrimaryLabel(labelList);
         const auto colorMap = buildColorMap(labelList, primaryLabel);
-        const auto blocks = buildBlocksForLabels(source, labelList);
-        
-        if (blocks.empty())
+        const auto blocks = buildBlocksForLabels(source, labelList, m_contextLines);
+        if (blocks.empty()) 
+        {
             return;
+        }
 
         const auto frameWidth = calculateFrameWidth(blocks);
 
@@ -636,8 +655,8 @@ namespace CaraReport
 
         for (const auto& line : contents.lines)
         {
-            const auto highlights = buildHighlights(line, labels);
-            const auto expandedText = expandTabs(line.text);
+            const auto highlights = buildHighlights(line, labels, m_tabWidth);
+            const auto expandedText = expandTabs(line.text, m_tabWidth);
             const auto lineDisplayWidth = expandedText.size();
 
             const auto columnColors = buildColumnColors(highlights, expandedText, colorMap);
@@ -647,7 +666,7 @@ namespace CaraReport
             outStream << "  " << frameColorString << paddedLineNumber << " " << m_theme->verticalBar() << resetString << " ";
 
             // write the colored code
-            for (int i = 0; i < lineDisplayWidth; ++i)
+            for (int i = 0; std::cmp_less(i , lineDisplayWidth); ++i)
             {
                 if (!columnColors[i].empty())
                 {
@@ -672,9 +691,11 @@ namespace CaraReport
         Level level,
         const LabelColorMap& colorMap) const
     {
-        auto highlights = buildHighlights(line, labels);
-        if (highlights.empty())
+        auto highlights = buildHighlights(line, labels, m_tabWidth);
+        if (highlights.empty()) 
+        {
             return;
+        }
 
         const auto singleLineHighlights = filterSingleLineHighlights(highlights);
         if (!singleLineHighlights.empty())
@@ -692,11 +713,7 @@ namespace CaraReport
         int frameWidth,
         const LabelColorMap& colorMap) const
     {
-        const auto frameColorString = frameColor();
-        const auto resetString = reset();
-        const auto expandedText = expandTabs(line.text);
-        const auto lineDisplayWidth = static_cast<int>(expandedText.size());
-
+        // call helpers that render underline and connectors; no local strings required here
         writeUnderlineWithMidpoints(outStream, highlights, frameWidth, colorMap);
         writeLineConnectorWithLabel(outStream, highlights, frameWidth, colorMap);
     }
@@ -746,9 +763,10 @@ namespace CaraReport
                         << m_theme->cornerBottomLeft() << m_theme->horizontalBar() << m_theme->horizontalBar()
                         << m_theme->horizontalBar();
                     
-                    if (highlight.label->text().has_value())
+                    const auto labelText = highlight.label->text();
+                    if (labelText.has_value())
                     {
-                        outStream << " " << highlight.label->text().value();
+                        outStream << " " << *labelText;
                     }
                     outStream << resetString << "\n";
                 }
@@ -781,7 +799,7 @@ namespace CaraReport
                 if (column >= highlight.startColumn && column < highlight.endColumn)
                 {
                     covering = &highlight;
-                    const auto midPoint = highlight.startColumn + (highlight.endColumn - highlight.startColumn) / 2;
+                    const auto midPoint = highlight.startColumn + ((highlight.endColumn - highlight.startColumn) / 2);
 
                     isMidPoint = (column == midPoint);
                     break;
@@ -817,10 +835,12 @@ namespace CaraReport
         const auto frameColorString = frameColor();
         const auto resetString = reset();
 
-        for (int i = highlights.size() - 1; i >= 0; --i)
+        const int highlightCount = static_cast<int>(highlights.size());
+        for (int i = highlightCount - 1; i >= 0; --i)
         {
-            const auto& highlight = highlights[i];
-            if (!highlight.label->text().has_value())
+            const auto& highlight = highlights[static_cast<size_t>(i)];
+            const auto labelOpt = highlight.label->text();
+            if (!labelOpt.has_value())
             {
                 continue;
             }
@@ -831,17 +851,19 @@ namespace CaraReport
             // the vertical line in the frame
             outStream << "  " << framePadding << " " << frameColorString << m_theme->verticalBreak() << resetString << " ";
 
-            const auto midPoint = highlight.startColumn + (highlight.endColumn - highlight.startColumn) / 2;
-            for (auto column = 0; column < midPoint; ++column)
+            const auto midPoint = highlight.startColumn + ((highlight.endColumn - highlight.startColumn) / 2);
+            for (int column = 0; column < midPoint; ++column)
             {
-                auto needsConnector = false;
+                bool needsConnector = false;
                 for (int j = i - 1; j >= 0; --j)
                 {
-                    const auto otherMidPoint = highlights[j].startColumn + (highlights[j].endColumn - highlights[j].startColumn) / 2;
-                    if (column == otherMidPoint && highlights[j].label->text().has_value())
+                    const auto& other = highlights[static_cast<size_t>(j)];
+                    const auto otherMidPoint = other.startColumn + ((other.endColumn - other.startColumn) / 2);
+                    const auto otherText = other.label->text();
+                    if (column == otherMidPoint && otherText.has_value())
                     {
                         needsConnector = true;
-                        const auto otherLineColor = colorFor(highlights[j].label, colorMap);
+                        const auto otherLineColor = colorFor(other.label, colorMap);
 
                         // the connector from the other highlight
                         outStream << otherLineColor << m_theme->verticalBar() << resetString;
@@ -861,7 +883,7 @@ namespace CaraReport
                 << m_theme->horizontalBar()
                 << m_theme->horizontalBar()
                 << " "
-                << highlight.label->text().value()
+                << *labelOpt
                 << resetString
                 << "\n";
         }
@@ -871,7 +893,7 @@ namespace CaraReport
         std::ostringstream& outStream,
         const Report& report) const
     {
-        const auto optionalFix = report.fix();
+        const auto& optionalFix = report.fix();
         if (optionalFix.has_value())
         {
             outStream << "  " << fixColor() << bold() << "Fix" << reset() << ": " << optionalFix.value() << "\n";
@@ -882,11 +904,11 @@ namespace CaraReport
         std::ostringstream& outStream,
         const Report& report) const
     {
-        const auto relatedReports = report.related();
+        const auto& relatedReports = report.related();
         if (!relatedReports.empty())
         {
             outStream << "\n";
-            for (const auto report : relatedReports)
+            for (const auto *const report : relatedReports)
             {
                 if (report != nullptr)
                 {
@@ -901,17 +923,14 @@ namespace CaraReport
         static bool enabled = []()
             {
 #ifdef _MSC_VER
-                char* noColor = nullptr;
-                //int length = 0;
-                _dupenv_s(&noColor, nullptr, "NO_COLOR");
-                bool hasNoColor = (noColor && noColor[0] != '\0');
-                if (hasNoColor)
+                char* raw = nullptr;
+                size_t len = 0;
+                if (_dupenv_s(&raw, &len, "NO_COLOR") == 0 && raw != nullptr)
                 {
-                    free(noColor);
-                    return false;
+                    std::unique_ptr<char, decltype(&free)> noColor(raw, &free);
+                    std::string noColorString(noColor.get());
+                    return noColorString.empty();
                 }
-
-                free(noColor);
                 return true;
 #else
                 const char* noColor = std::getenv("NO_COLOR");
@@ -929,21 +948,21 @@ namespace CaraReport
         SetConsoleOutputCP(CP_UTF8);
         SetConsoleCP(CP_UTF8);
 
-        const auto outputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+        auto *const outputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
         if (outputHandle == INVALID_HANDLE_VALUE)
         {
             return false;
         }
 
         DWORD mode = 0;
-        if (!GetConsoleMode(outputHandle, &mode))
+        if (GetConsoleMode(outputHandle, &mode) == 0)
         {
             return false;
         }
 
-        if (!(mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING))
+        if ((mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) == 0U)
         {
-            if (!SetConsoleMode(outputHandle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING))
+            if (SetConsoleMode(outputHandle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING) == 0)
             {
                 return false;
             }

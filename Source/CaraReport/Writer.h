@@ -23,7 +23,7 @@ namespace CaraReport
         std::vector<const Label*> blockLabels;
     };
 
-    enum class HighlightKind
+    enum class HighlightKind : std::uint8_t
     {
         Start,   // label starts on this line
         End,     // label ends on this line
@@ -48,6 +48,7 @@ namespace CaraReport
         Writer(Writer&& other) noexcept = default;
         Writer& operator=(const Writer& other);
         Writer& operator=(Writer&& other) noexcept = default;
+        ~Writer() = default;
 
         [[nodiscard]] static Writer create();
         [[nodiscard]] Writer& withTheme(std::unique_ptr<Theme>&& theme);
@@ -69,34 +70,10 @@ namespace CaraReport
         [[nodiscard]] std::string colorFor(
             const Label* label, 
             const LabelColorMap& colorMap) const;
-        [[nodiscard]] LabelColorMap buildColorMap(
-            const std::vector<Label>& labels,
-            const Label* primaryLabel) const;
         [[nodiscard]] std::vector<std::string> buildColumnColors(
             const std::vector<Highlight>& highlights, 
             const std::string& expandedText, 
             const LabelColorMap& colorMap) const;
-
-        [[nodiscard]] int lineNumberWidth(const std::vector<LineInfo>& lines) const;
-        [[nodiscard]] std::string padLeft(const std::string& text, int width) const;
-        [[nodiscard]] std::string expandTabs(const std::string& text) const;
-        [[nodiscard]] int offsetToDisplayColumn(const std::string& text, int offset) const;
-        [[nodiscard]] int calculateFrameWidth(const std::vector<ContextBlock>& blocks) const;
-        [[nodiscard]] int calculateMaxColumn(const std::vector<Highlight>& highlights) const;
-
-        [[nodiscard]] const Label* findPrimaryLabel(
-            const std::vector<Label>& labels) const;
-        [[nodiscard]] std::vector<ContextBlock> buildBlocksForLabels(
-            const Source* source, 
-            const std::vector<Label>& labels) const;
-        [[nodiscard]] std::vector<Highlight> buildHighlights(
-            const LineInfo& line, 
-            const std::vector<const Label*>& labels) const;
-        [[nodiscard]] Highlight buildHighlight(
-            const LineInfo& line, 
-            const Label& label) const;
-        [[nodiscard]] std::vector<Highlight> filterSingleLineHighlights(
-            const std::vector<Highlight>& highlights) const;
 
         void writeReport(
             std::ostringstream& outStream, 
@@ -165,8 +142,8 @@ namespace CaraReport
             const Report& report) const;
 
         std::unique_ptr<Theme> m_theme;
-        int m_contextLines;
-        int m_tabWidth;
+        int m_contextLines{2};
+        int m_tabWidth{4};
         bool m_colorsEnabled;
         bool m_ansiSupported;
     };

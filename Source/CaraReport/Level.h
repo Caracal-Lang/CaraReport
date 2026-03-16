@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 
 namespace CaraReport
 {
-    enum class Level
+    enum class Level : std::uint8_t
     {
         Error,
         Warning,

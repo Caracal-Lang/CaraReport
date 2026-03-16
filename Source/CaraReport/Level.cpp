@@ -13,6 +13,6 @@ namespace CaraReport
         case Level::Info:
             return "Info";
         }
-        return std::string();
+        return {};
     }
 }

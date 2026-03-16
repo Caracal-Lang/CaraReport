@@ -13,9 +13,9 @@ namespace CaraReport
 {
     struct LineInfo
     {
-        int lineNumber;
-        int start;
-        int length;
+        int lineNumber{};
+        int start{};
+        int length{};
         std::string text;
     };
 
@@ -33,7 +33,7 @@ namespace CaraReport
     class Source
     {
     public:
-        Source(const std::string& name, const std::string& source);
+        Source(std::string name, std::string source);
 
         void setName(const std::string& name);
         void setSource(const std::string& source);

@@ -1,9 +1,11 @@
 ﻿#include <CaraReport/Report.h>
 
+#include <utility>
+
 namespace CaraReport
 {
-    Report::Report(const std::string& message)
-        : m_message(message)
+    Report::Report(std::string message)
+        : m_message(std::move(message))
     {
     }
 
@@ -21,8 +23,10 @@ namespace CaraReport
 
     Report& Report::operator=(const Report& other)
     {
-        if (this == &other)
+        if (this == &other) 
+        {
             return *this;
+        }
 
         m_level = other.m_level;
         m_title = other.m_title;
@@ -89,17 +93,17 @@ namespace CaraReport
         return m_level;
     }
 
-    std::optional<std::string> Report::title() const
+    const std::optional<std::string>& Report::title() const
     {
         return m_title;
     }
 
-    std::optional<std::string> Report::url() const
+    const std::optional<std::string>& Report::url() const
     {
         return m_url;
     }
 
-    std::string Report::message() const
+    const std::string& Report::message() const
     {
         return m_message;
     }
@@ -109,17 +113,17 @@ namespace CaraReport
         return m_source.get();
     }
 
-    std::vector<Label> Report::labels() const
+    const std::vector<Label>& Report::labels() const
     {
         return m_labels;
     }
 
-    std::optional<std::string> Report::fix() const
+    const std::optional<std::string>& Report::fix() const
     {
         return m_fix;
     }
 
-    std::vector<const Report*> Report::related() const
+    const std::vector<const Report*>& Report::related() const
     {
         return m_related;
     }

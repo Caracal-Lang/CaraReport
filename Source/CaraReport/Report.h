@@ -14,11 +14,12 @@ namespace CaraReport
     class Report
     {
     public:
-        explicit Report(const std::string& message);
+        explicit Report(std::string message);
         Report(const Report& other);
         Report(Report&& other) noexcept = default;
         Report& operator=(const Report& other);
         Report& operator=(Report&& other) noexcept = default;
+        ~Report() = default;
 
         [[nodiscard]] Report& withLevel(Level level);
         [[nodiscard]] Report& withTitle(const std::string& title);
@@ -30,13 +31,13 @@ namespace CaraReport
         [[nodiscard]] Report& withRelated(const Report* report);
 
         [[nodiscard]] Level level() const;
-        [[nodiscard]] std::optional<std::string> title() const;
-        [[nodiscard]] std::optional<std::string> url() const;
-        [[nodiscard]] std::string message() const;
+        [[nodiscard]] const std::optional<std::string>& title() const;
+        [[nodiscard]] const std::optional<std::string>& url() const;
+        [[nodiscard]] const std::string& message() const;
         [[nodiscard]] const Source* source() const;
-        [[nodiscard]] std::vector<Label> labels() const;
-        [[nodiscard]] std::optional<std::string> fix() const;
-        [[nodiscard]] std::vector<const Report*> related() const;
+        [[nodiscard]] const std::vector<Label>& labels() const;
+        [[nodiscard]] const std::optional<std::string>& fix() const;
+        [[nodiscard]] const std::vector<const Report*>& related() const;
 
     private:
         Level m_level = Level::Error;

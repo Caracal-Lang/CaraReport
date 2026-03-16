@@ -1,10 +1,14 @@
 ﻿#include <CaraReport/Source.h>
 
+#include <utility>
+
+#include <algorithm>
+
 namespace CaraReport
 {
-    Source::Source(const std::string& name, const std::string& source)
-        : m_name(name)
-        , m_source(source)
+    Source::Source(std::string name, std::string source)
+        : m_name(std::move(name))
+        , m_source(std::move(source))
     {
         buildLineIndex();
     }
@@ -85,12 +89,9 @@ namespace CaraReport
         int startLine = lineAtOffset(span.start());
         int endLine = lineAtOffset(span.end());
         int fromLine = std::max(1, startLine - contextLinesBefore);
-        int toLine = endLine + contextLinesAfter;
+        size_t toLine = static_cast<size_t>(endLine + contextLinesAfter);
 
-        if (toLine > m_lineOffsets.size())
-        {
-            toLine = m_lineOffsets.size();
-        }
+        toLine = std::min(toLine, m_lineOffsets.size());
 
         contents.startLine = fromLine;
         contents.startColumn = span.start() - m_lineOffsets[fromLine - 1];
