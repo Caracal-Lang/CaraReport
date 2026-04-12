@@ -1,8 +1,10 @@
 ﻿#pragma once
 
+#include <CaraReport/API.h>
+
 namespace CaraReport
 {
-    class Span
+    class CARAREPORT_API Span
     {
       public:
         Span();

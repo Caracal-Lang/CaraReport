@@ -14,6 +14,10 @@ option(CARAREPORT_BUILD_EXAMPLE "Enable building the example." OFF)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+if(CARAREPORT_BUILD_TESTS)
+  include(CTest)
+endif()
+
 
 add_subdirectory(Source)
 

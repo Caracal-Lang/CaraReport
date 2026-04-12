@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <CaraReport/API.h>
 #include <CaraReport/Span.h>
 #include <algorithm>
 #include <memory>
@@ -11,7 +12,7 @@
 
 namespace CaraReport
 {
-    struct LineInfo
+    struct CARAREPORT_API LineInfo
     {
         int lineNumber{};
         int start{};
@@ -19,7 +20,7 @@ namespace CaraReport
         std::string text;
     };
 
-    struct SpanContents
+    struct CARAREPORT_API SpanContents
     {
         std::string name;
         std::string data;
@@ -30,7 +31,7 @@ namespace CaraReport
         std::vector<LineInfo> lines;
     };
 
-    class Source
+    class CARAREPORT_API Source
     {
     public:
         Source(std::string name, std::string source);

@@ -1,37 +1,38 @@
 ﻿#pragma once
 
+#include <CaraReport/API.h>
 #include <string>
 
 namespace CaraReport::Colors
 {
-    [[nodiscard]] std::string rgb(int red, int green, int blue);
+    [[nodiscard]] CARAREPORT_API std::string rgb(int red, int green, int blue);
 
-    [[nodiscard]] std::string reset();
-    [[nodiscard]] std::string bold();
-    [[nodiscard]] std::string dim();
-    [[nodiscard]] std::string italic();
-    [[nodiscard]] std::string underline();
+    [[nodiscard]] CARAREPORT_API std::string reset();
+    [[nodiscard]] CARAREPORT_API std::string bold();
+    [[nodiscard]] CARAREPORT_API std::string dim();
+    [[nodiscard]] CARAREPORT_API std::string italic();
+    [[nodiscard]] CARAREPORT_API std::string underline();
 
-    [[nodiscard]] std::string red();
-    [[nodiscard]] std::string green();
-    [[nodiscard]] std::string yellow();
-    [[nodiscard]] std::string blue();
-    [[nodiscard]] std::string magenta();
-    [[nodiscard]] std::string cyan();
-    [[nodiscard]] std::string white();
+    [[nodiscard]] CARAREPORT_API std::string red();
+    [[nodiscard]] CARAREPORT_API std::string green();
+    [[nodiscard]] CARAREPORT_API std::string yellow();
+    [[nodiscard]] CARAREPORT_API std::string blue();
+    [[nodiscard]] CARAREPORT_API std::string magenta();
+    [[nodiscard]] CARAREPORT_API std::string cyan();
+    [[nodiscard]] CARAREPORT_API std::string white();
 
-    [[nodiscard]] std::string brightRed();
-    [[nodiscard]] std::string brightYellow();
-    [[nodiscard]] std::string brightBlue();
-    [[nodiscard]] std::string brightCyan();
+    [[nodiscard]] CARAREPORT_API std::string brightRed();
+    [[nodiscard]] CARAREPORT_API std::string brightYellow();
+    [[nodiscard]] CARAREPORT_API std::string brightBlue();
+    [[nodiscard]] CARAREPORT_API std::string brightCyan();
 
-    [[nodiscard]] std::string pastelRed();
-    [[nodiscard]] std::string pastelOrange();
-    [[nodiscard]] std::string pastelYellow();
-    [[nodiscard]] std::string pastelGreen();
-    [[nodiscard]] std::string pastelCyan();
-    [[nodiscard]] std::string pastelBlue();
-    [[nodiscard]] std::string pastelPurple();
-    [[nodiscard]] std::string pastelPink();
-    [[nodiscard]] std::string pastelGray();
+    [[nodiscard]] CARAREPORT_API std::string pastelRed();
+    [[nodiscard]] CARAREPORT_API std::string pastelOrange();
+    [[nodiscard]] CARAREPORT_API std::string pastelYellow();
+    [[nodiscard]] CARAREPORT_API std::string pastelGreen();
+    [[nodiscard]] CARAREPORT_API std::string pastelCyan();
+    [[nodiscard]] CARAREPORT_API std::string pastelBlue();
+    [[nodiscard]] CARAREPORT_API std::string pastelPurple();
+    [[nodiscard]] CARAREPORT_API std::string pastelPink();
+    [[nodiscard]] CARAREPORT_API std::string pastelGray();
 }

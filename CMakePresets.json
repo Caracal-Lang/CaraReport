@@ -36,6 +36,41 @@
         "CMAKE_BUILD_TYPE": "Release"
       },
       "description": "Release build for x64"
+    },
+    {
+      "name": "x64 Debug Tests",
+      "inherits": "x64 Debug",
+      "cacheVariables": {
+        "CARAREPORT_BUILD_TESTS": "ON"
+      },
+      "description": "Debug build for x64 with tests enabled"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x64 Debug",
+      "configurePreset": "x64 Debug",
+      "description": "Build the x64 Debug preset"
+    },
+    {
+      "name": "x64 Release",
+      "configurePreset": "x64 Release",
+      "description": "Build the x64 Release preset"
+    },
+    {
+      "name": "x64 Debug Tests",
+      "configurePreset": "x64 Debug Tests",
+      "description": "Build the x64 Debug Tests preset"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "x64 Debug Tests",
+      "configurePreset": "x64 Debug Tests",
+      "description": "Run tests for the x64 Debug Tests preset",
+      "output": {
+        "outputOnFailure": true
+      }
     }
   ]
 }

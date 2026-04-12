@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <CaraReport/API.h>
 #include <CaraReport/Level.h>
 #include <CaraReport/Label.h>
 #include <CaraReport/Colors.h>
@@ -10,7 +11,7 @@
 
 namespace CaraReport
 {
-    class Theme
+    class CARAREPORT_API Theme
     {
       public:
         Theme() = default;

@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <CaraReport/API.h>
+#include <cstdint>
 #include <string>
 
 namespace CaraReport
@@ -11,5 +13,5 @@ namespace CaraReport
         Info
     };
 
-    [[nodiscard]] std::string stringify(Level level);
+    [[nodiscard]] CARAREPORT_API std::string stringify(Level level);
 }

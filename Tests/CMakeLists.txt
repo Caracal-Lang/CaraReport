@@ -6,6 +6,8 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE CaraReport CaraTest)
 
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+
 if (WIN32)
     add_custom_command(
         TARGET ${PROJECT_NAME} PRE_BUILD

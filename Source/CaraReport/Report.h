@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <CaraReport/API.h>
 #include <CaraReport/Label.h>
 #include <CaraReport/Level.h>
 #include <CaraReport/Source.h>
@@ -11,7 +12,7 @@
 
 namespace CaraReport
 {
-    class Report
+    class CARAREPORT_API Report
     {
     public:
         explicit Report(std::string message);

@@ -1,12 +1,13 @@
 ﻿#pragma once
 
+#include <CaraReport/API.h>
 #include <CaraReport/Span.h>
 #include <optional>
 #include <string>
 
 namespace CaraReport
 {
-    class Label
+    class CARAREPORT_API Label
     {
     public:
         Label(Span span, const std::string& label, bool primary = false);

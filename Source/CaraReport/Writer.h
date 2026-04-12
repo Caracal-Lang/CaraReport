@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <CaraReport/API.h>
 #include <CaraReport/Report.h>
 #include <CaraReport/Theme.h>
 #include <CaraReport/Label.h>
@@ -40,7 +41,7 @@ namespace CaraReport
         const Label* label;
     };
 
-    class Writer
+    class CARAREPORT_API Writer
     {
     public:
         Writer();
@@ -148,8 +149,8 @@ namespace CaraReport
         bool m_ansiSupported;
     };
 
-    [[nodiscard]] bool colorsEnabled();
-    [[nodiscard]] bool enableUtf8AndAnsi();
+    [[nodiscard]] CARAREPORT_API bool colorsEnabled();
+    [[nodiscard]] CARAREPORT_API bool enableUtf8AndAnsi();
 
-    void printReport(const Report& report);
+    CARAREPORT_API void printReport(const Report& report);
 }
