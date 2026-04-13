@@ -36,7 +36,7 @@ CARAREPORT_API int CRSpan_overlaps(CRSpan left, CRSpan right);
 CARAREPORT_API CRLabel* CRLabel_create(int start, int length, const char* label, int primary);
 CARAREPORT_API void CRLabel_destroy(CRLabel* label);
 CARAREPORT_API CRSpan CRLabel_span(const CRLabel* label);
-CARAREPORT_API char* CRLabel_text(const CRLabel* label);
+CARAREPORT_API const char* CRLabel_text(const CRLabel* label);
 CARAREPORT_API int CRLabel_isPrimary(const CRLabel* label);
 CARAREPORT_API int CRLabel_start(const CRLabel* label);
 CARAREPORT_API int CRLabel_end(const CRLabel* label);
@@ -54,10 +54,10 @@ CARAREPORT_API void CRReport_addLabelHandle(CRReport* report, const CRLabel* lab
 CARAREPORT_API void CRReport_addRelated(CRReport* report, const CRReport* related);
 CARAREPORT_API void CRReport_addLabel(CRReport* report, int start, int length, const char* label, int primary);
 CARAREPORT_API CRLevel CRReport_level(const CRReport* report);
-CARAREPORT_API char* CRReport_title(const CRReport* report);
-CARAREPORT_API char* CRReport_url(const CRReport* report);
-CARAREPORT_API char* CRReport_message(const CRReport* report);
-CARAREPORT_API char* CRReport_fix(const CRReport* report);
+CARAREPORT_API const char* CRReport_title(const CRReport* report);
+CARAREPORT_API const char* CRReport_url(const CRReport* report);
+CARAREPORT_API const char* CRReport_message(const CRReport* report);
+CARAREPORT_API const char* CRReport_fix(const CRReport* report);
 CARAREPORT_API int CRReport_hasSource(const CRReport* report);
 CARAREPORT_API int CRReport_labelCount(const CRReport* report);
 
@@ -68,12 +68,12 @@ CARAREPORT_API void CRSource_setText(CRSource* source, const char* sourceText);
 CARAREPORT_API void CRSource_readSpan(const CRSource* source, CRSpan span, int contextLinesBefore, int contextLinesAfter, CRSpanContents** contents);
 
 CARAREPORT_API void CRSpanContents_destroy(CRSpanContents* contents);
-CARAREPORT_API char* CRSpanContents_name(const CRSpanContents* contents);
+CARAREPORT_API const char* CRSpanContents_name(const CRSpanContents* contents);
 CARAREPORT_API int CRSpanContents_startLine(const CRSpanContents* contents);
 CARAREPORT_API int CRSpanContents_startColumn(const CRSpanContents* contents);
 CARAREPORT_API int CRSpanContents_lineCount(const CRSpanContents* contents);
 CARAREPORT_API int CRSpanContents_lineNumber(const CRSpanContents* contents, int index);
-CARAREPORT_API char* CRSpanContents_lineText(const CRSpanContents* contents, int index);
+CARAREPORT_API const char* CRSpanContents_lineText(const CRSpanContents* contents, int index);
 
 CARAREPORT_API CRTheme* CRTheme_create(void);
 CARAREPORT_API CRTheme* CRTheme_ascii(void);

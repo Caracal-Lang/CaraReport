@@ -5,7 +5,6 @@
 #include <CaraReport/Theme.h>
 #include <CaraReport/Writer.h>
 
-#include <optional>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
@@ -123,14 +122,14 @@ namespace
         return buffer;
     }
 
-    [[nodiscard]] char* duplicateOptionalString(const std::optional<std::string>& value)
+    [[nodiscard]] const char* nullableCString(const std::string& value)
     {
-        if (!value.has_value())
+        if (value.empty())
         {
             return nullptr;
         }
 
-        return duplicateCString(value.value());
+        return value.c_str();
     }
 }
 
@@ -186,14 +185,14 @@ extern "C"
         return toCSpan(label->value.span());
     }
 
-    char* CRLabel_text(const CRLabel* label)
+    const char* CRLabel_text(const CRLabel* label)
     {
         if (label == nullptr)
         {
             return nullptr;
         }
 
-        return duplicateOptionalString(label->value.text());
+        return nullableCString(label->value.text());
     }
 
     int CRLabel_isPrimary(const CRLabel* label)
@@ -329,44 +328,44 @@ extern "C"
         return toCLevel(report->value.level());
     }
 
-    char* CRReport_title(const CRReport* report)
+    const char* CRReport_title(const CRReport* report)
     {
         if (report == nullptr)
         {
             return nullptr;
         }
 
-        return duplicateOptionalString(report->value.title());
+        return nullableCString(report->value.title());
     }
 
-    char* CRReport_url(const CRReport* report)
+    const char* CRReport_url(const CRReport* report)
     {
         if (report == nullptr)
         {
             return nullptr;
         }
 
-        return duplicateOptionalString(report->value.url());
+        return nullableCString(report->value.url());
     }
 
-    char* CRReport_message(const CRReport* report)
+    const char* CRReport_message(const CRReport* report)
     {
         if (report == nullptr)
         {
             return nullptr;
         }
 
-        return duplicateCString(report->value.message());
+        return report->value.message().c_str();
     }
 
-    char* CRReport_fix(const CRReport* report)
+    const char* CRReport_fix(const CRReport* report)
     {
         if (report == nullptr)
         {
             return nullptr;
         }
 
-        return duplicateOptionalString(report->value.fix());
+        return nullableCString(report->value.fix());
     }
 
     int CRReport_hasSource(const CRReport* report)
@@ -436,14 +435,14 @@ extern "C"
         delete contents;
     }
 
-    char* CRSpanContents_name(const CRSpanContents* contents)
+    const char* CRSpanContents_name(const CRSpanContents* contents)
     {
         if (contents == nullptr)
         {
             return nullptr;
         }
 
-        return duplicateCString(contents->value.name);
+        return contents->value.name.c_str();
     }
 
     int CRSpanContents_startLine(const CRSpanContents* contents)
@@ -477,7 +476,7 @@ extern "C"
         return contents->value.lines[lineIndex].lineNumber;
     }
 
-    char* CRSpanContents_lineText(const CRSpanContents* contents, int index)
+    const char* CRSpanContents_lineText(const CRSpanContents* contents, int index)
     {
         if (contents == nullptr || index < 0)
         {
@@ -490,7 +489,7 @@ extern "C"
             return nullptr;
         }
 
-        return duplicateCString(contents->value.lines[lineIndex].text);
+        return contents->value.lines[lineIndex].text.c_str();
     }
 
     CRTheme* CRTheme_create(void)

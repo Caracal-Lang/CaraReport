@@ -45,8 +45,8 @@ static void Label()
 
     CaraTest::areEqual(label.start(), 10u);
     CaraTest::areEqual(label.length(), 5u);
-    CaraTest::isTrue(label.text().has_value());
-    CaraTest::areEqual(label.text().value(), "test label");
+    CaraTest::isTrue(!label.text().empty());
+    CaraTest::areEqual(label.text(), "test label");
 }
 
 static void SourceReadSpan()
@@ -101,10 +101,11 @@ static void ReportBuilder()
         .withLabel(CaraReport::Label(8, 1, "here"));
 
     CaraTest::areEqual(report.message(), "unexpected token");
-    CaraTest::isTrue(report.title().has_value());
-    CaraTest::areEqual(report.title().value(), "parse::unexpected");
+    CaraTest::isTrue(!report.title().empty());
+    CaraTest::areEqual(report.title(), "parse::unexpected");
     CaraTest::isTrue(report.level() == CaraReport::Level::Error);
-    CaraTest::isTrue(report.fix().has_value());
+    CaraTest::isTrue(!report.fix().empty());
+    CaraTest::areEqual(report.fix(), "did you forget a value?");
     CaraTest::isTrue(report.source() != nullptr);
     CaraTest::areEqual(report.labels().size(), 1u);
 }

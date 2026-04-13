@@ -44,14 +44,13 @@ static void Label()
 {
     auto* label = CRLabel_create(10, 5, "test label", 0);
     CaraTest::isTrue(label != nullptr);
-    auto* labelText = CRLabel_text(label);
+    const auto* labelText = CRLabel_text(label);
 
     CaraTest::areEqual(CRLabel_start(label), 10);
     CaraTest::areEqual(CRLabel_length(label), 5);
     CaraTest::isTrue(labelText != nullptr);
     CaraTest::areEqual(labelText, "test label");
 
-    CRString_free(labelText);
     CRLabel_destroy(label);
 }
 
@@ -70,12 +69,11 @@ static void SourceReadSpan()
 
     CaraTest::isTrue(contents != nullptr);
     CaraTest::areEqual(CRSpanContents_lineCount(contents), 1);
-    auto* lineText = CRSpanContents_lineText(contents, 0);
+    const auto* lineText = CRSpanContents_lineText(contents, 0);
     CaraTest::isTrue(lineText != nullptr);
     CaraTest::areEqual(lineText, "world");
     CaraTest::areEqual(CRSpanContents_lineNumber(contents, 0), 2);
 
-    CRString_free(lineText);
     CRSpanContents_destroy(contents);
     CRSource_destroy(source);
 }
@@ -95,9 +93,9 @@ static void SourceContextLines()
 
     CaraTest::isTrue(contents != nullptr);
     CaraTest::isTrue(CRSpanContents_lineCount(contents) >= 3);
-    auto* firstLine = CRSpanContents_lineText(contents, 0);
-    auto* secondLine = CRSpanContents_lineText(contents, 1);
-    auto* thirdLine = CRSpanContents_lineText(contents, 2);
+    const auto* firstLine = CRSpanContents_lineText(contents, 0);
+    const auto* secondLine = CRSpanContents_lineText(contents, 1);
+    const auto* thirdLine = CRSpanContents_lineText(contents, 2);
     CaraTest::isTrue(firstLine != nullptr);
     CaraTest::isTrue(secondLine != nullptr);
     CaraTest::isTrue(thirdLine != nullptr);
@@ -105,9 +103,6 @@ static void SourceContextLines()
     CaraTest::areEqual(secondLine, "line3");
     CaraTest::areEqual(thirdLine, "line4");
 
-    CRString_free(firstLine);
-    CRString_free(secondLine);
-    CRString_free(thirdLine);
     CRSpanContents_destroy(contents);
     CRSource_destroy(source);
 }
@@ -143,11 +138,10 @@ static void SourceHasName()
         &contents);
 
     CaraTest::isTrue(contents != nullptr);
-    auto* name = CRSpanContents_name(contents);
+    const auto* name = CRSpanContents_name(contents);
     CaraTest::isTrue(name != nullptr);
     CaraTest::areEqual(name, "test.rs");
 
-    CRString_free(name);
     CRSpanContents_destroy(contents);
     CRSource_destroy(source);
 }
@@ -167,9 +161,9 @@ static void ReportBuilder()
     CRReport_setSource(report, source);
     CRReport_addLabelHandle(report, label);
 
-    auto* message = CRReport_message(report);
-    auto* title = CRReport_title(report);
-    auto* fix = CRReport_fix(report);
+    const auto* message = CRReport_message(report);
+    const auto* title = CRReport_title(report);
+    const auto* fix = CRReport_fix(report);
 
     CaraTest::isTrue(message != nullptr);
     CaraTest::areEqual(message, "unexpected token");
@@ -181,9 +175,6 @@ static void ReportBuilder()
     CaraTest::isTrue(CRReport_hasSource(report) != 0);
     CaraTest::areEqual(CRReport_labelCount(report), 1);
 
-    CRString_free(message);
-    CRString_free(title);
-    CRString_free(fix);
     CRLabel_destroy(label);
     CRReport_destroy(report);
     CRSource_destroy(source);

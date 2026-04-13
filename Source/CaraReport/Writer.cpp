@@ -514,10 +514,9 @@ namespace CaraReport
         const Report& report) const
     {
         // title line
-        const auto& optionalTitle = report.title();
-        if (optionalTitle.has_value())
+        const auto& title = report.title();
+        if (!title.empty())
         {
-            const auto& title = optionalTitle.value();
             const auto level = report.level();
             const auto levelString = stringify(level);
             if (shouldUseColors())
@@ -530,10 +529,9 @@ namespace CaraReport
             }
 
             outStream << titleColor() << title << reset();
-            const auto& optionalUrl = report.url();
-            if (optionalUrl)
+            const auto& url = report.url();
+            if (!url.empty())
             {
-                const auto& url = optionalUrl.value();
                 outStream << " (" << url << ")";
             }
             outStream << "\n";
@@ -763,10 +761,10 @@ namespace CaraReport
                         << m_theme->cornerBottomLeft() << m_theme->horizontalBar() << m_theme->horizontalBar()
                         << m_theme->horizontalBar();
                     
-                    const auto labelText = highlight.label->text();
-                    if (labelText.has_value())
+                    const auto& labelText = highlight.label->text();
+                    if (!labelText.empty())
                     {
-                        outStream << " " << *labelText;
+                        outStream << " " << labelText;
                     }
                     outStream << resetString << "\n";
                 }
@@ -839,8 +837,8 @@ namespace CaraReport
         for (int i = highlightCount - 1; i >= 0; --i)
         {
             const auto& highlight = highlights[static_cast<size_t>(i)];
-            const auto labelOpt = highlight.label->text();
-            if (!labelOpt.has_value())
+            const auto& labelText = highlight.label->text();
+            if (labelText.empty())
             {
                 continue;
             }
@@ -859,8 +857,8 @@ namespace CaraReport
                 {
                     const auto& other = highlights[static_cast<size_t>(j)];
                     const auto otherMidPoint = other.startColumn + ((other.endColumn - other.startColumn) / 2);
-                    const auto otherText = other.label->text();
-                    if (column == otherMidPoint && otherText.has_value())
+                    const auto& otherText = other.label->text();
+                    if (column == otherMidPoint && !otherText.empty())
                     {
                         needsConnector = true;
                         const auto otherLineColor = colorFor(other.label, colorMap);
@@ -883,7 +881,7 @@ namespace CaraReport
                 << m_theme->horizontalBar()
                 << m_theme->horizontalBar()
                 << " "
-                << *labelOpt
+                << labelText
                 << resetString
                 << "\n";
         }
@@ -893,10 +891,10 @@ namespace CaraReport
         std::ostringstream& outStream,
         const Report& report) const
     {
-        const auto& optionalFix = report.fix();
-        if (optionalFix.has_value())
+        const auto& fix = report.fix();
+        if (!fix.empty())
         {
-            outStream << "  " << fixColor() << bold() << "Fix" << reset() << ": " << optionalFix.value() << "\n";
+            outStream << "  " << fixColor() << bold() << "Fix" << reset() << ": " << fix << "\n";
         }
     }
 

@@ -93,12 +93,12 @@ namespace CaraReport
         return m_level;
     }
 
-    const std::optional<std::string>& Report::title() const
+    const std::string& Report::title() const
     {
         return m_title;
     }
 
-    const std::optional<std::string>& Report::url() const
+    const std::string& Report::url() const
     {
         return m_url;
     }
@@ -118,7 +118,7 @@ namespace CaraReport
         return m_labels;
     }
 
-    const std::optional<std::string>& Report::fix() const
+    const std::string& Report::fix() const
     {
         return m_fix;
     }

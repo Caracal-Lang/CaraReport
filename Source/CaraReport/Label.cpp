@@ -21,7 +21,7 @@ namespace CaraReport
         return m_span;
     }
 
-    std::optional<std::string> Label::text() const
+    const std::string& Label::text() const
     {
         return m_text;
     }

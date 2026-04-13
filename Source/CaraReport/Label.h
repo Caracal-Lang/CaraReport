@@ -2,7 +2,6 @@
 
 #include <CaraReport/API.h>
 #include <CaraReport/Span.h>
-#include <optional>
 #include <string>
 
 namespace CaraReport
@@ -14,7 +13,7 @@ namespace CaraReport
         Label(int start, int length, const std::string& label, bool primary = false);
 
         [[nodiscard]] const Span& span() const;
-        [[nodiscard]] std::optional<std::string> text() const;
+        [[nodiscard]] const std::string& text() const;
         [[nodiscard]] bool isPrimary() const;
 
         [[nodiscard]] int start() const;
@@ -23,7 +22,7 @@ namespace CaraReport
 
     private:
         Span m_span;
-        std::optional<std::string> m_text;
+        std::string m_text;
         bool m_primary = false;
     };
 }
