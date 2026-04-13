@@ -41,7 +41,8 @@
       "name": "x64 Debug Tests",
       "inherits": "x64 Debug",
       "cacheVariables": {
-        "CARAREPORT_BUILD_TESTS": "ON"
+        "CARAREPORT_BUILD_TESTS": "ON",
+        "CARAREPORT_BUILD_EXAMPLE": "ON"
       },
       "description": "Debug build for x64 with tests enabled"
     }

@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.30)
 
-project(CaraReport LANGUAGES CXX VERSION 2026.3.16)
+project(CaraReport LANGUAGES C CXX VERSION 2026.3.16)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -27,7 +27,8 @@ if(CARAREPORT_BUILD_TESTS)
 endif()
 
 if(CARAREPORT_BUILD_EXAMPLE)
-    add_subdirectory(Examples)
+    add_subdirectory(Examples/C)
+    add_subdirectory(Examples/CPP)
 endif()
 
 configure_file(
