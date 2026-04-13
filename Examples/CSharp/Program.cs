@@ -4,29 +4,6 @@ namespace CaraReport;
 
 internal static class Program
 {
-    private const string PastelPink = "\x1b[38;2;244;143;177m";
-    private const string PastelOrange = "\x1b[38;2;255;183;77m";
-    private const string PastelPurple = "\x1b[38;2;179;157;219m";
-
-    private static void Main()
-    {
-        Console.OutputEncoding = Encoding.UTF8;
-
-        Example1();
-        Example2();
-        Example3();
-        Example4();
-        Example5();
-        Example6();
-        Example7();
-        Example8();
-        Example9();
-        Example10();
-        Example11();
-        Example12();
-        Example13();
-    }
-
     private static void Example1()
     {
         Console.WriteLine(" Example 1: Simple parse error \n");
@@ -243,9 +220,9 @@ internal static class Program
             .AddLabel(11, 14, "setting enabled");
 
         using var theme = Theme.Ascii()
-            .SetLevelColor(Level.Info, PastelPink)
-            .SetFrameColor(PastelOrange)
-            .SetLabelPaletteColor(0, PastelPurple);
+            .SetLevelColor(Level.Info, Colors.PastelPink())
+            .SetFrameColor(Colors.PastelOrange())
+            .SetLabelPaletteColor(0, Colors.PastelPurple());
 
         using var writer = new Writer()
             .SetTheme(theme)
@@ -395,5 +372,24 @@ internal static class Program
             .AddLabel(100, 5, "sum expression");
 
         Console.WriteLine(report.Write());
+    }
+
+    private static void Main()
+    {
+        Console.OutputEncoding = Encoding.UTF8;
+
+        Example1();
+        Example2();
+        Example3();
+        Example4();
+        Example5();
+        Example6();
+        Example7();
+        Example8();
+        Example9();
+        Example10();
+        Example11();
+        Example12();
+        Example13();
     }
 }

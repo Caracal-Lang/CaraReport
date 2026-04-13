@@ -1,5 +1,6 @@
 ﻿#include <CaraReport/C.h>
 
+#include <CaraReport/Colors.h>
 #include <CaraReport/Report.h>
 #include <CaraReport/Source.h>
 #include <CaraReport/Theme.h>
@@ -135,6 +136,161 @@ namespace
 
 extern "C"
 {
+    char* CRColor_rgb(int red, int green, int blue)
+    {
+        return duplicateCString(CaraReport::Colors::rgb(red, green, blue));
+    }
+
+    const char* CRColor_reset(void)
+    {
+        static const std::string color = CaraReport::Colors::reset();
+        return color.c_str();
+    }
+
+    const char* CRColor_bold(void)
+    {
+        static const std::string color = CaraReport::Colors::bold();
+        return color.c_str();
+    }
+
+    const char* CRColor_dim(void)
+    {
+        static const std::string color = CaraReport::Colors::dim();
+        return color.c_str();
+    }
+
+    const char* CRColor_italic(void)
+    {
+        static const std::string color = CaraReport::Colors::italic();
+        return color.c_str();
+    }
+
+    const char* CRColor_underline(void)
+    {
+        static const std::string color = CaraReport::Colors::underline();
+        return color.c_str();
+    }
+
+    const char* CRColor_red(void)
+    {
+        static const std::string color = CaraReport::Colors::red();
+        return color.c_str();
+    }
+
+    const char* CRColor_green(void)
+    {
+        static const std::string color = CaraReport::Colors::green();
+        return color.c_str();
+    }
+
+    const char* CRColor_yellow(void)
+    {
+        static const std::string color = CaraReport::Colors::yellow();
+        return color.c_str();
+    }
+
+    const char* CRColor_blue(void)
+    {
+        static const std::string color = CaraReport::Colors::blue();
+        return color.c_str();
+    }
+
+    const char* CRColor_magenta(void)
+    {
+        static const std::string color = CaraReport::Colors::magenta();
+        return color.c_str();
+    }
+
+    const char* CRColor_cyan(void)
+    {
+        static const std::string color = CaraReport::Colors::cyan();
+        return color.c_str();
+    }
+
+    const char* CRColor_white(void)
+    {
+        static const std::string color = CaraReport::Colors::white();
+        return color.c_str();
+    }
+
+    const char* CRColor_brightRed(void)
+    {
+        static const std::string color = CaraReport::Colors::brightRed();
+        return color.c_str();
+    }
+
+    const char* CRColor_brightYellow(void)
+    {
+        static const std::string color = CaraReport::Colors::brightYellow();
+        return color.c_str();
+    }
+
+    const char* CRColor_brightBlue(void)
+    {
+        static const std::string color = CaraReport::Colors::brightBlue();
+        return color.c_str();
+    }
+
+    const char* CRColor_brightCyan(void)
+    {
+        static const std::string color = CaraReport::Colors::brightCyan();
+        return color.c_str();
+    }
+
+    const char* CRColor_pastelRed(void)
+    {
+        static const std::string color = CaraReport::Colors::pastelRed();
+        return color.c_str();
+    }
+
+    const char* CRColor_pastelOrange(void)
+    {
+        static const std::string color = CaraReport::Colors::pastelOrange();
+        return color.c_str();
+    }
+
+    const char* CRColor_pastelYellow(void)
+    {
+        static const std::string color = CaraReport::Colors::pastelYellow();
+        return color.c_str();
+    }
+
+    const char* CRColor_pastelGreen(void)
+    {
+        static const std::string color = CaraReport::Colors::pastelGreen();
+        return color.c_str();
+    }
+
+    const char* CRColor_pastelCyan(void)
+    {
+        static const std::string color = CaraReport::Colors::pastelCyan();
+        return color.c_str();
+    }
+
+    const char* CRColor_pastelBlue(void)
+    {
+        static const std::string color = CaraReport::Colors::pastelBlue();
+        return color.c_str();
+    }
+
+    const char* CRColor_pastelPurple(void)
+    {
+        static const std::string color = CaraReport::Colors::pastelPurple();
+        return color.c_str();
+    }
+
+    const char* CRColor_pastelPink(void)
+    {
+        static const std::string color = CaraReport::Colors::pastelPink();
+        return color.c_str();
+    }
+
+    const char* CRColor_pastelGray(void)
+    {
+        static const std::string color = CaraReport::Colors::pastelGray();
+        return color.c_str();
+    }
+
     CRSpan CRSpan_create(int start, int length)
     {
         return {start, length};

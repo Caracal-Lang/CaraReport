@@ -1,51 +1,11 @@
-#include <CaraReport/C.h>
+﻿#include <CaraReport/C.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-static const char* PASTEL_PINK = "\x1b[38;2;244;143;177m";
-static const char* PASTEL_ORANGE = "\x1b[38;2;255;183;77m";
-static const char* PASTEL_PURPLE = "\x1b[38;2;179;157;219m";
-
-static void print_and_free(char* text)
-{
-    if (text != NULL)
-    {
-        fputs(text, stdout);
-        CRString_free(text);
-    }
-}
-
-static int print_report(CRReport* report)
-{
-    char* rendered = CRReport_write(report);
-    if (rendered == NULL)
-    {
-        return 0;
-    }
-
-    print_and_free(rendered);
-    return 1;
-}
-
-static int print_writer_report(CRWriter* writer, CRReport* report)
-{
-    char* rendered;
-
-    if (writer == NULL || report == NULL)
-    {
-        return 0;
-    }
-
-    rendered = CRWriter_writeReport(writer, report);
-    if (rendered == NULL)
-    {
-        return 0;
-    }
-
-    print_and_free(rendered);
-    return 1;
-}
+static void print_and_free(char* text);
+static int print_report(CRReport* report);
+static int print_writer_report(CRWriter* writer, CRReport* report);
 
 static int example_1(void)
 {
@@ -391,9 +351,9 @@ static int example_8(void)
     CRReport_setSourceText(report, "theme.conf", "[settings]\nenable_feature = true\nlog_level = info\n");
     CRReport_addLabel(report, 11, 14, "setting enabled", 0);
 
-    CRTheme_setLevelColor(theme, CARAREPORT_LEVEL_INFO, PASTEL_PINK);
-    CRTheme_setFrameColor(theme, PASTEL_ORANGE);
-    CRTheme_setLabelPaletteColor(theme, 0, PASTEL_PURPLE);
+    CRTheme_setLevelColor(theme, CARAREPORT_LEVEL_INFO, CRColor_pastelPink());
+    CRTheme_setFrameColor(theme, CRColor_pastelOrange());
+    CRTheme_setLabelPaletteColor(theme, 0, CRColor_pastelPurple());
 
     CRWriter_setTheme(writer, theme);
     CRWriter_setColors(writer, 1);
@@ -648,4 +608,45 @@ int main(void)
     if (!example_13()) return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
+}
+
+
+static void print_and_free(char* text)
+{
+    if (text != NULL)
+    {
+        fputs(text, stdout);
+        CRString_free(text);
+    }
+}
+
+static int print_report(CRReport* report)
+{
+    char* rendered = CRReport_write(report);
+    if (rendered == NULL)
+    {
+        return 0;
+    }
+
+    print_and_free(rendered);
+    return 1;
+}
+
+static int print_writer_report(CRWriter* writer, CRReport* report)
+{
+    char* rendered;
+
+    if (writer == NULL || report == NULL)
+    {
+        return 0;
+    }
+
+    rendered = CRWriter_writeReport(writer, report);
+    if (rendered == NULL)
+    {
+        return 0;
+    }
+
+    print_and_free(rendered);
+    return 1;
 }

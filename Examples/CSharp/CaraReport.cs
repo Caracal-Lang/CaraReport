@@ -9,6 +9,139 @@ public enum Level
     Info = 2
 }
 
+public static class Colors
+{
+    public static string Rgb(int red, int green, int blue)
+    {
+        return CaraReportNative.ColorRgb(red, green, blue);
+    }
+
+    public static string Reset()
+    {
+        return CaraReportNative.ColorReset();
+    }
+
+    public static string Bold()
+    {
+        return CaraReportNative.ColorBold();
+    }
+
+    public static string Dim()
+    {
+        return CaraReportNative.ColorDim();
+    }
+
+    public static string Italic()
+    {
+        return CaraReportNative.ColorItalic();
+    }
+
+    public static string Underline()
+    {
+        return CaraReportNative.ColorUnderline();
+    }
+
+    public static string Red()
+    {
+        return CaraReportNative.ColorRed();
+    }
+
+    public static string Green()
+    {
+        return CaraReportNative.ColorGreen();
+    }
+
+    public static string Yellow()
+    {
+        return CaraReportNative.ColorYellow();
+    }
+
+    public static string Blue()
+    {
+        return CaraReportNative.ColorBlue();
+    }
+
+    public static string Magenta()
+    {
+        return CaraReportNative.ColorMagenta();
+    }
+
+    public static string Cyan()
+    {
+        return CaraReportNative.ColorCyan();
+    }
+
+    public static string White()
+    {
+        return CaraReportNative.ColorWhite();
+    }
+
+    public static string BrightRed()
+    {
+        return CaraReportNative.ColorBrightRed();
+    }
+
+    public static string BrightYellow()
+    {
+        return CaraReportNative.ColorBrightYellow();
+    }
+
+    public static string BrightBlue()
+    {
+        return CaraReportNative.ColorBrightBlue();
+    }
+
+    public static string BrightCyan()
+    {
+        return CaraReportNative.ColorBrightCyan();
+    }
+
+    public static string PastelRed()
+    {
+        return CaraReportNative.ColorPastelRed();
+    }
+
+    public static string PastelOrange()
+    {
+        return CaraReportNative.ColorPastelOrange();
+    }
+
+    public static string PastelYellow()
+    {
+        return CaraReportNative.ColorPastelYellow();
+    }
+
+    public static string PastelGreen()
+    {
+        return CaraReportNative.ColorPastelGreen();
+    }
+
+    public static string PastelCyan()
+    {
+        return CaraReportNative.ColorPastelCyan();
+    }
+
+    public static string PastelBlue()
+    {
+        return CaraReportNative.ColorPastelBlue();
+    }
+
+    public static string PastelPurple()
+    {
+        return CaraReportNative.ColorPastelPurple();
+    }
+
+    public static string PastelPink()
+    {
+        return CaraReportNative.ColorPastelPink();
+    }
+
+    public static string PastelGray()
+    {
+        return CaraReportNative.ColorPastelGray();
+    }
+}
+
 public sealed class Report : IDisposable
 {
     private nint _handle;
@@ -255,6 +388,33 @@ internal static class CaraReportNative
     private static readonly CRReportAddRelatedDelegate _reportAddRelatedExport = LoadExport<CRReportAddRelatedDelegate>("CRReport_addRelated");
     private static readonly CRReportAddLabelDelegate _reportAddLabelExport = LoadExport<CRReportAddLabelDelegate>("CRReport_addLabel");
     private static readonly CRReportWriteDelegate _reportWriteExport = LoadExport<CRReportWriteDelegate>("CRReport_write");
+
+    private static readonly CRColorRgbDelegate _colorRgbExport = LoadExport<CRColorRgbDelegate>("CRColor_rgb");
+    private static readonly CRColorNamedDelegate _colorResetExport = LoadExport<CRColorNamedDelegate>("CRColor_reset");
+    private static readonly CRColorNamedDelegate _colorBoldExport = LoadExport<CRColorNamedDelegate>("CRColor_bold");
+    private static readonly CRColorNamedDelegate _colorDimExport = LoadExport<CRColorNamedDelegate>("CRColor_dim");
+    private static readonly CRColorNamedDelegate _colorItalicExport = LoadExport<CRColorNamedDelegate>("CRColor_italic");
+    private static readonly CRColorNamedDelegate _colorUnderlineExport = LoadExport<CRColorNamedDelegate>("CRColor_underline");
+    private static readonly CRColorNamedDelegate _colorRedExport = LoadExport<CRColorNamedDelegate>("CRColor_red");
+    private static readonly CRColorNamedDelegate _colorGreenExport = LoadExport<CRColorNamedDelegate>("CRColor_green");
+    private static readonly CRColorNamedDelegate _colorYellowExport = LoadExport<CRColorNamedDelegate>("CRColor_yellow");
+    private static readonly CRColorNamedDelegate _colorBlueExport = LoadExport<CRColorNamedDelegate>("CRColor_blue");
+    private static readonly CRColorNamedDelegate _colorMagentaExport = LoadExport<CRColorNamedDelegate>("CRColor_magenta");
+    private static readonly CRColorNamedDelegate _colorCyanExport = LoadExport<CRColorNamedDelegate>("CRColor_cyan");
+    private static readonly CRColorNamedDelegate _colorWhiteExport = LoadExport<CRColorNamedDelegate>("CRColor_white");
+    private static readonly CRColorNamedDelegate _colorBrightRedExport = LoadExport<CRColorNamedDelegate>("CRColor_brightRed");
+    private static readonly CRColorNamedDelegate _colorBrightYellowExport = LoadExport<CRColorNamedDelegate>("CRColor_brightYellow");
+    private static readonly CRColorNamedDelegate _colorBrightBlueExport = LoadExport<CRColorNamedDelegate>("CRColor_brightBlue");
+    private static readonly CRColorNamedDelegate _colorBrightCyanExport = LoadExport<CRColorNamedDelegate>("CRColor_brightCyan");
+    private static readonly CRColorNamedDelegate _colorPastelRedExport = LoadExport<CRColorNamedDelegate>("CRColor_pastelRed");
+    private static readonly CRColorNamedDelegate _colorPastelOrangeExport = LoadExport<CRColorNamedDelegate>("CRColor_pastelOrange");
+    private static readonly CRColorNamedDelegate _colorPastelYellowExport = LoadExport<CRColorNamedDelegate>("CRColor_pastelYellow");
+    private static readonly CRColorNamedDelegate _colorPastelGreenExport = LoadExport<CRColorNamedDelegate>("CRColor_pastelGreen");
+    private static readonly CRColorNamedDelegate _colorPastelCyanExport = LoadExport<CRColorNamedDelegate>("CRColor_pastelCyan");
+    private static readonly CRColorNamedDelegate _colorPastelBlueExport = LoadExport<CRColorNamedDelegate>("CRColor_pastelBlue");
+    private static readonly CRColorNamedDelegate _colorPastelPurpleExport = LoadExport<CRColorNamedDelegate>("CRColor_pastelPurple");
+    private static readonly CRColorNamedDelegate _colorPastelPinkExport = LoadExport<CRColorNamedDelegate>("CRColor_pastelPink");
+    private static readonly CRColorNamedDelegate _colorPastelGrayExport = LoadExport<CRColorNamedDelegate>("CRColor_pastelGray");
     
     private static readonly CRThemeCreateDelegate _themeCreateExport = LoadExport<CRThemeCreateDelegate>("CRTheme_create");
     private static readonly CRThemeAsciiDelegate _themeAsciiExport = LoadExport<CRThemeAsciiDelegate>("CRTheme_ascii");
@@ -330,6 +490,137 @@ internal static class CaraReportNative
     {
         var text = _reportWriteExport(report);
         return TakeOwnedUtf8String(text);
+    }
+
+    internal static string ColorRgb(int red, int green, int blue)
+    {
+        var text = _colorRgbExport(red, green, blue);
+        return TakeOwnedUtf8String(text);
+    }
+
+    internal static string ColorReset()
+    {
+        return ReadBorrowedUtf8String(_colorResetExport());
+    }
+
+    internal static string ColorBold()
+    {
+        return ReadBorrowedUtf8String(_colorBoldExport());
+    }
+
+    internal static string ColorDim()
+    {
+        return ReadBorrowedUtf8String(_colorDimExport());
+    }
+
+    internal static string ColorItalic()
+    {
+        return ReadBorrowedUtf8String(_colorItalicExport());
+    }
+
+    internal static string ColorUnderline()
+    {
+        return ReadBorrowedUtf8String(_colorUnderlineExport());
+    }
+
+    internal static string ColorRed()
+    {
+        return ReadBorrowedUtf8String(_colorRedExport());
+    }
+
+    internal static string ColorGreen()
+    {
+        return ReadBorrowedUtf8String(_colorGreenExport());
+    }
+
+    internal static string ColorYellow()
+    {
+        return ReadBorrowedUtf8String(_colorYellowExport());
+    }
+
+    internal static string ColorBlue()
+    {
+        return ReadBorrowedUtf8String(_colorBlueExport());
+    }
+
+    internal static string ColorMagenta()
+    {
+        return ReadBorrowedUtf8String(_colorMagentaExport());
+    }
+
+    internal static string ColorCyan()
+    {
+        return ReadBorrowedUtf8String(_colorCyanExport());
+    }
+
+    internal static string ColorWhite()
+    {
+        return ReadBorrowedUtf8String(_colorWhiteExport());
+    }
+
+    internal static string ColorBrightRed()
+    {
+        return ReadBorrowedUtf8String(_colorBrightRedExport());
+    }
+
+    internal static string ColorBrightYellow()
+    {
+        return ReadBorrowedUtf8String(_colorBrightYellowExport());
+    }
+
+    internal static string ColorBrightBlue()
+    {
+        return ReadBorrowedUtf8String(_colorBrightBlueExport());
+    }
+
+    internal static string ColorBrightCyan()
+    {
+        return ReadBorrowedUtf8String(_colorBrightCyanExport());
+    }
+
+    internal static string ColorPastelRed()
+    {
+        return ReadBorrowedUtf8String(_colorPastelRedExport());
+    }
+
+    internal static string ColorPastelOrange()
+    {
+        return ReadBorrowedUtf8String(_colorPastelOrangeExport());
+    }
+
+    internal static string ColorPastelYellow()
+    {
+        return ReadBorrowedUtf8String(_colorPastelYellowExport());
+    }
+
+    internal static string ColorPastelGreen()
+    {
+        return ReadBorrowedUtf8String(_colorPastelGreenExport());
+    }
+
+    internal static string ColorPastelCyan()
+    {
+        return ReadBorrowedUtf8String(_colorPastelCyanExport());
+    }
+
+    internal static string ColorPastelBlue()
+    {
+        return ReadBorrowedUtf8String(_colorPastelBlueExport());
+    }
+
+    internal static string ColorPastelPurple()
+    {
+        return ReadBorrowedUtf8String(_colorPastelPurpleExport());
+    }
+
+    internal static string ColorPastelPink()
+    {
+        return ReadBorrowedUtf8String(_colorPastelPinkExport());
+    }
+
+    internal static string ColorPastelGray()
+    {
+        return ReadBorrowedUtf8String(_colorPastelGrayExport());
     }
 
     internal static nint ThemeCreate()
@@ -423,6 +714,16 @@ internal static class CaraReportNative
         }
     }
 
+    private static string ReadBorrowedUtf8String(nint text)
+    {
+        if (text == nint.Zero)
+        {
+            return string.Empty;
+        }
+
+        return Marshal.PtrToStringUTF8(text) ?? string.Empty;
+    }
+
     private static T LoadExport<T>(string exportName) where T : Delegate
     {
         var symbol = NativeLibrary.GetExport(_libraryHandle, exportName);
@@ -500,6 +801,12 @@ internal static class CaraReportNative
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate nint CRReportWriteDelegate(nint report);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate nint CRColorRgbDelegate(int red, int green, int blue);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate nint CRColorNamedDelegate();
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate nint CRThemeCreateDelegate();

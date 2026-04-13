@@ -26,6 +26,33 @@ typedef enum CRLevel
     CARAREPORT_LEVEL_INFO = 2
 } CRLevel;
 
+CARAREPORT_API char* CRColor_rgb(int red, int green, int blue);
+CARAREPORT_API const char* CRColor_reset(void);
+CARAREPORT_API const char* CRColor_bold(void);
+CARAREPORT_API const char* CRColor_dim(void);
+CARAREPORT_API const char* CRColor_italic(void);
+CARAREPORT_API const char* CRColor_underline(void);
+CARAREPORT_API const char* CRColor_red(void);
+CARAREPORT_API const char* CRColor_green(void);
+CARAREPORT_API const char* CRColor_yellow(void);
+CARAREPORT_API const char* CRColor_blue(void);
+CARAREPORT_API const char* CRColor_magenta(void);
+CARAREPORT_API const char* CRColor_cyan(void);
+CARAREPORT_API const char* CRColor_white(void);
+CARAREPORT_API const char* CRColor_brightRed(void);
+CARAREPORT_API const char* CRColor_brightYellow(void);
+CARAREPORT_API const char* CRColor_brightBlue(void);
+CARAREPORT_API const char* CRColor_brightCyan(void);
+CARAREPORT_API const char* CRColor_pastelRed(void);
+CARAREPORT_API const char* CRColor_pastelOrange(void);
+CARAREPORT_API const char* CRColor_pastelYellow(void);
+CARAREPORT_API const char* CRColor_pastelGreen(void);
+CARAREPORT_API const char* CRColor_pastelCyan(void);
+CARAREPORT_API const char* CRColor_pastelBlue(void);
+CARAREPORT_API const char* CRColor_pastelPurple(void);
+CARAREPORT_API const char* CRColor_pastelPink(void);
+CARAREPORT_API const char* CRColor_pastelGray(void);
+
 CARAREPORT_API CRSpan CRSpan_create(int start, int length);
 CARAREPORT_API CRSpan CRSpan_fromRange(int start, int end);
 CARAREPORT_API int CRSpan_end(CRSpan span);
