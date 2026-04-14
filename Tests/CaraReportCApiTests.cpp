@@ -1,4 +1,4 @@
-#include <CaraReport/C.h>
+﻿#include <CaraReport/C.h>
 #include <CaraTest.h>
 
 #include <string_view>
@@ -49,7 +49,7 @@ static void Label()
     CaraTest::areEqual(CRLabel_start(label), 10);
     CaraTest::areEqual(CRLabel_length(label), 5);
     CaraTest::isTrue(labelText != nullptr);
-    CaraTest::areEqual(labelText, "test label");
+    CaraTest::areEqual(labelText, std::string_view("test label"));
 
     CRLabel_destroy(label);
 }
@@ -71,7 +71,7 @@ static void SourceReadSpan()
     CaraTest::areEqual(CRSpanContents_lineCount(contents), 1);
     const auto* lineText = CRSpanContents_lineText(contents, 0);
     CaraTest::isTrue(lineText != nullptr);
-    CaraTest::areEqual(lineText, "world");
+    CaraTest::areEqual(lineText, std::string_view("world"));
     CaraTest::areEqual(CRSpanContents_lineNumber(contents, 0), 2);
 
     CRSpanContents_destroy(contents);
@@ -99,9 +99,9 @@ static void SourceContextLines()
     CaraTest::isTrue(firstLine != nullptr);
     CaraTest::isTrue(secondLine != nullptr);
     CaraTest::isTrue(thirdLine != nullptr);
-    CaraTest::areEqual(firstLine, "line2");
-    CaraTest::areEqual(secondLine, "line3");
-    CaraTest::areEqual(thirdLine, "line4");
+    CaraTest::areEqual(firstLine, std::string_view("line2"));
+    CaraTest::areEqual(secondLine, std::string_view("line3"));
+    CaraTest::areEqual(thirdLine, std::string_view("line4"));
 
     CRSpanContents_destroy(contents);
     CRSource_destroy(source);
@@ -140,7 +140,7 @@ static void SourceHasName()
     CaraTest::isTrue(contents != nullptr);
     const auto* name = CRSpanContents_name(contents);
     CaraTest::isTrue(name != nullptr);
-    CaraTest::areEqual(name, "test.rs");
+    CaraTest::areEqual(name, std::string_view("test.rs"));
 
     CRSpanContents_destroy(contents);
     CRSource_destroy(source);
@@ -166,12 +166,12 @@ static void ReportBuilder()
     const auto* fix = CRReport_fix(report);
 
     CaraTest::isTrue(message != nullptr);
-    CaraTest::areEqual(message, "unexpected token");
+    CaraTest::areEqual(message, std::string_view("unexpected token"));
     CaraTest::isTrue(title != nullptr);
-    CaraTest::areEqual(title, "parse::unexpected");
+    CaraTest::areEqual(title, std::string_view("parse::unexpected"));
     CaraTest::isTrue(CRReport_level(report) == CARAREPORT_LEVEL_ERROR);
     CaraTest::isTrue(fix != nullptr);
-    CaraTest::areEqual(fix, "did you forget a value?");
+    CaraTest::areEqual(fix, std::string_view("did you forget a value?"));
     CaraTest::isTrue(CRReport_hasSource(report) != 0);
     CaraTest::areEqual(CRReport_labelCount(report), 1);
 
@@ -195,13 +195,14 @@ static void WriterGeneratesOutput()
 
     auto* output = CRWriter_writeReport(writer, report);
     CaraTest::isTrue(output != nullptr);
+    auto outputView = std::string_view(output);
 
-    CaraTest::isTrue(Contains(output, "oops::my::bad"));
-    CaraTest::isTrue(Contains(output, "oops!"));
-    CaraTest::isTrue(Contains(output, "This bit here"));
-    CaraTest::isTrue(Contains(output, "try doing it better next time?"));
-    CaraTest::isTrue(Contains(output, "test.rs"));
-    CaraTest::isTrue(Contains(output, "text"));
+    CaraTest::contains(outputView, std::string_view("oops::my::bad"));
+    CaraTest::contains(outputView, std::string_view("oops!"));
+    CaraTest::contains(outputView, std::string_view("This bit here"));
+    CaraTest::contains(outputView, std::string_view("try doing it better next time?"));
+    CaraTest::contains(outputView, std::string_view("test.rs"));
+    CaraTest::contains(outputView, std::string_view("text"));
 
     CRString_free(output);
     CRWriter_destroy(writer);
@@ -222,10 +223,11 @@ static void WriterGeneratesOutputAsciiMode()
 
     auto* output = CRWriter_writeReport(writer, report);
     CaraTest::isTrue(output != nullptr);
+    auto outputView = std::string_view(output);
 
-    CaraTest::isTrue(Contains(output, "problem"));
-    CaraTest::isTrue(Contains(output, "this word"));
-    CaraTest::isTrue(Contains(output, "test.rs"));
+    CaraTest::contains(outputView, std::string_view("problem"));
+    CaraTest::contains(outputView, std::string_view("this word"));
+    CaraTest::contains(outputView, std::string_view("test.rs"));
 
     CRString_free(output);
     CRWriter_destroy(writer);
@@ -249,10 +251,11 @@ static void WriterGeneratesOutputMultipleLabels()
 
     auto* output = CRWriter_writeReport(writer, report);
     CaraTest::isTrue(output != nullptr);
+    auto outputView = std::string_view(output);
 
-    CaraTest::isTrue(Contains(output, "type mismatch"));
-    CaraTest::isTrue(Contains(output, "expected 'number'"));
-    CaraTest::isTrue(Contains(output, "got 'string'"));
+    CaraTest::contains(outputView, std::string_view("type mismatch"));
+    CaraTest::contains(outputView, std::string_view("expected 'number'"));
+    CaraTest::contains(outputView, std::string_view("got 'string'"));
 
     CRString_free(output);
     CRWriter_destroy(writer);
@@ -271,8 +274,9 @@ static void WriterGeneratesOutputWarningLevel()
 
     auto* output = CRWriter_writeReport(writer, report);
     CaraTest::isTrue(output != nullptr);
+    auto outputView = std::string_view(output);
 
-    CaraTest::isTrue(Contains(output, "this is a warning"));
+    CaraTest::contains(outputView, std::string_view("this is a warning"));
 
     CRString_free(output);
     CRWriter_destroy(writer);
@@ -293,9 +297,10 @@ static void WriterGeneratesOutputNoSource()
     auto* output = CRWriter_writeReport(writer, report);
     CaraTest::isTrue(output != nullptr);
 
-    CaraTest::isTrue(Contains(output, "simple::error"));
-    CaraTest::isTrue(Contains(output, "no source code"));
-    CaraTest::isTrue(Contains(output, "this is just a message"));
+    auto outputView = std::string_view(output);
+    CaraTest::contains(outputView, std::string_view("simple::error"));
+    CaraTest::contains(outputView, std::string_view("no source code"));
+    CaraTest::contains(outputView, std::string_view("this is just a message"));
 
     CRString_free(output);
     CRWriter_destroy(writer);

@@ -2,11 +2,6 @@
 #include <CaraTest.h>
 #include <iostream>
 
-static bool Contains(std::string_view haystack, std::string_view needle)
-{
-    return haystack.find(needle) != std::string::npos;
-}
-
 static void Span()
 {
     CaraReport::Span span(10, 5);
@@ -124,12 +119,12 @@ static void WriterGeneratesOutput()
         .withColors(false);
     auto output = writer.writeReport(report);
 
-    CaraTest::isTrue(Contains(output, "oops::my::bad"));
-    CaraTest::isTrue(Contains(output, "oops!"));
-    CaraTest::isTrue(Contains(output, "This bit here"));
-    CaraTest::isTrue(Contains(output, "try doing it better next time?"));
-    CaraTest::isTrue(Contains(output, "test.rs"));
-    CaraTest::isTrue(Contains(output, "text"));
+    CaraTest::contains(output, "oops::my::bad");
+    CaraTest::contains(output, "oops!");
+    CaraTest::contains(output, "This bit here");
+    CaraTest::contains(output, "try doing it better next time?");
+    CaraTest::contains(output, "test.rs");
+    CaraTest::contains(output, "text");
 }
 
 static void WriterGeneratesOutputAsciiMode()
@@ -144,9 +139,9 @@ static void WriterGeneratesOutputAsciiMode()
         .withColors(false);
     auto output = writer.writeReport(report);
 
-    CaraTest::isTrue(Contains(output, "problem"));
-    CaraTest::isTrue(Contains(output, "this word"));
-    CaraTest::isTrue(Contains(output, "test.rs"));
+    CaraTest::contains(output, "problem");
+    CaraTest::contains(output, "this word");
+    CaraTest::contains(output, "test.rs");
 }
 
 static void WriterGeneratesOutputMultipleLabels()
@@ -162,9 +157,9 @@ static void WriterGeneratesOutputMultipleLabels()
         .withColors(false);
     auto output = writer.writeReport(report);
 
-    CaraTest::isTrue(Contains(output, "type mismatch"));
-    CaraTest::isTrue(Contains(output, "expected 'number'"));
-    CaraTest::isTrue(Contains(output, "got 'string'"));
+    CaraTest::contains(output, "type mismatch");
+    CaraTest::contains(output, "expected 'number'");
+    CaraTest::contains(output, "got 'string'");
 }
 
 static void WriterGeneratesOutputWarningLevel()
@@ -176,7 +171,7 @@ static void WriterGeneratesOutputWarningLevel()
         .withColors(false);
     auto output = writer.writeReport(report);
 
-    CaraTest::isTrue(Contains(output, "this is a warning"));
+    CaraTest::contains(output, "this is a warning");
 }
 
 static void WriterGeneratesOutputNoSource()
@@ -189,9 +184,9 @@ static void WriterGeneratesOutputNoSource()
         .withColors(false);
     auto output = writer.writeReport(report);
 
-    CaraTest::isTrue(Contains(output, "simple::error"));
-    CaraTest::isTrue(Contains(output, "no source code"));
-    CaraTest::isTrue(Contains(output, "this is just a message"));
+    CaraTest::contains(output, "simple::error");
+    CaraTest::contains(output, "no source code");
+    CaraTest::contains(output, "this is just a message");
 }
 
 static const auto tests =
