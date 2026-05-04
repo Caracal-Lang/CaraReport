@@ -599,7 +599,7 @@ namespace CaraReport
                 << resetString 
                 << sourceContent.name 
                 << ":"
-                << (sourceContent.startLine + 1) 
+                << sourceContent.startLine
                 << ":"
                 << (sourceContent.startColumn + 1) 
                 << frameColorString 
