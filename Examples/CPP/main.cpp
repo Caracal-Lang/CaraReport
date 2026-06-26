@@ -8,9 +8,8 @@ static void example_1()
 {
     std::cout << " Example 1: Simple parse error \n\n";
 
-    // Error oops::my::bad
-    //  oops!
-    //    ╭─[bad_file.rs:3:3]
+    // Error oops::my::bad oops!
+    //    ╭─[bad_file.rs:2:3]
     //  1 │ source
     //  2 │   text
     //    ·   ──┬─
@@ -34,9 +33,8 @@ static void example_2()
 {
     std::cout << "\n Example 2: Ascii theme \n\n";
 
-    // Error oops::my::bad
-    //  oops!
-    //    ,-[bad_file.rs:3:3]
+    // Error oops::my::bad oops!
+    //    ,-[bad_file.rs:2:3]
     //  1 | source
     //  2 |   text
     //    .   ----
@@ -61,9 +59,8 @@ static void example_3()
 {
     std::cout << "\n Example 3: Multiple labels \n\n";
 
-    // Error ts(2322)
-    //  Type 'string' is not assignable to type 'number'
-    //    ╭─[example.ts:2:17]
+    // Error ts(2322) Type 'string' is not assignable to type 'number'
+    //    ╭─[example.ts:1:17]
     //  1 │ let x: number = "hello";
     //    ·        ───┬──   ───┬───
     //    ·           │        ╰── got 'string'
@@ -89,9 +86,9 @@ static void example_4()
 {
     std::cout << "\n Example 4: Warning with URL \n\n";
 
-        // Warning W0602 (https://docs.python.org/3/library/subprocess.html)
-        //  os.popen() is deprecated since Python 3.0
-        //    ╭─[app.py:3:13]
+        // Warning W0602 os.popen() is deprecated since Python 3.0
+        //  https://docs.python.org/3/library/subprocess.html
+        //    ╭─[app.py:2:13]
         //  1 │ import os
         //  2 │ result = os.popen('ls')
         //    ·             ──┬──
@@ -117,9 +114,8 @@ static void example_5()
 {
     std::cout << "\n Example 5: Info note\n\n";
 
-        // Info note::feature_x
-        //  Feature X is available
-        //    ╭─[config.toml:2:1]
+        // Info note::feature_x Feature X is available
+        //    ╭─[config.toml:1:1]
         //  1 │ enable_feature = false
         //    · ───────┬──────
         //    ·        ╰── toggle here
@@ -144,9 +140,8 @@ static void example_6()
 {
     std::cout << "\n Example 6: Simple error\n\n";
 
-        // Error math::precedence
-        //  Wrong answer
-        //    ╭─[math.txt:2:13]
+        // Error math::precedence Wrong answer
+        //    ╭─[math.txt:1:13]
         //  1 │ 2 + 2 * 2 = 8
         //    ·             ┬
         //    ·             ╰── this should be 6
@@ -168,9 +163,8 @@ static void example_7()
 {
     std::cout << "\n Example 7: Related reports \n\n";
 
-        // Error root::err
-        //  Top-level error referencing a note
-        //    ╭─[lib.rs:4:5]
+        // Error root::err Top-level error referencing a note
+        //    ╭─[lib.rs:3:5]
         //  1 │ fn call_old() {
         //  2 │     // deprecated usage
         //  3 │     old_api();
@@ -181,9 +175,8 @@ static void example_7()
         //    ╰────
         //  Fix: Replace call_old -> call_new or update usage
         //
-        // Info note::related
-        //  This is a related note
-        //    ╭─[note.txt:3:1]
+        // Info note::related This is a related note
+        //    ╭─[note.txt:2:1]
         //  1 │ This helper explains why this API is deprecated:
         //  2 │ Use new_api() instead.
         //    · ───────────┬──────────
@@ -222,9 +215,8 @@ static void example_8()
 {
     std::cout << "\n Example 8: Custom theme and colors \n\n";
 
-        // Info theme::info
-        //  Custom themed info
-        //    ,-[theme.conf:3:1]
+        // Info theme::info Custom themed info
+        //    ,-[theme.conf:2:1]
         //  1 | [settings]
         //  2 | enable_feature = true
         //    . --------------
@@ -260,7 +252,7 @@ static void example_9()
     std::cout << "\n Example 9: Tab width and context lines \n\n";
 
         //  Tab-handling example
-        //    ╭─[tabs.txt:2:2]
+        //    ╭─[tabs.txt:1:2]
         //  1 │         fn main() {
         //    ·         ─┬
         //    ·          ╰── call site
@@ -285,9 +277,8 @@ static void example_10()
 {
     std::cout << "\n Example 10: Multiline span \n\n";
 
-        // Error E0308
-        //  mismatched types
-        //    ╭─[script.rs:3:13]
+        // Error E0308 mismatched types
+        //    ╭─[script.rs:2:13]
         //  1 │ fn main() {
         //  2 │     let x = vec![
         //    ·             ╭─^
@@ -318,9 +309,8 @@ static void example_11()
 {
     std::cout << "\n Example 11: Three labels (long) \n\n";
 
-        // Error sql::type_check
-        //  3 type errors found in query
-        //    ╭─[query.sql:2:48]
+        // Error sql::type_check 3 type errors found in query
+        //    ╭─[query.sql:1:48]
         //  1 │ SELECT name, age, email FROM users WHERE age > 'thirty' AND active = 7.5 AND role IN 42
         //    ·                                                ────┬───              ─┬─             ─┬
         //    ·                                                    │                  │               ╰── expected list, got integer
@@ -348,9 +338,8 @@ static void example_12()
 {
     std::cout << "\n Example 12: Three labels (short) \n\n";
 
-        // Error sql::type
-        //  Type mismatch in query
-        //    ╭─[short.sql:2:35]
+        // Error sql::type Type mismatch in query
+        //    ╭─[short.sql:1:35]
         //  1 │ SELECT age FROM users WHERE age > 'thirty'
         //    ·                       ──┬── ─┬─   ────┬───
         //    ·                         │    │        ╰── expected integer
@@ -378,9 +367,8 @@ static void example_13()
 {
     std::cout << "\n Example 13: Longer function With multiple labels \n\n";
 
-        // Error cpp::fn_issue
-        //  Multiple issues in function
-        //    ╭─[bigfn.cpp:4:9]
+        // Error cpp::fn_issue Multiple issues in function
+        //    ╭─[bigfn.cpp:3:9]
         //  1 │ int add(int a, int b) {
         //  2 │     int unused = 42;
         //    ·         ───┬──

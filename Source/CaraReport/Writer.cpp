@@ -513,8 +513,9 @@ namespace CaraReport
         std::ostringstream& outStream, 
         const Report& report) const
     {
-        // title line
+        // title line: level + title, with the message right next to the title
         const auto& title = report.title();
+        const auto& message = report.message();
         if (!title.empty())
         {
             const auto level = report.level();
@@ -529,16 +530,24 @@ namespace CaraReport
             }
 
             outStream << titleColor() << title << reset();
-            const auto& url = report.url();
-            if (!url.empty())
+            if (!message.empty())
             {
-                outStream << " (" << url << ")";
+                outStream << " " << bold() << message << reset();
             }
             outStream << "\n";
         }
+        else
+        {
+            // no title: the message stands on its own line
+            outStream << "  " << bold() << message << reset() << "\n";
+        }
 
-        // message line
-        outStream << "  " << bold() << report.message() << reset() << "\n";
+        // optional url on the line below the title
+        const auto& url = report.url();
+        if (!url.empty())
+        {
+            outStream << "  " << url << "\n";
+        }
     }
 
     void Writer::writeSource(std::ostringstream& outStream, const Report& report) const

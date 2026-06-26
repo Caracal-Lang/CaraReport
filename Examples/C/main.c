@@ -13,9 +13,8 @@ static int example_1(void)
 
     puts(" Example 1: Simple parse error \n");
 
-    // Error oops::my::bad
-    //  oops!
-    //    ╭─[bad_file.rs:3:3]
+    // Error oops::my::bad oops!
+    //    ╭─[bad_file.rs:2:3]
     //  1 │ source
     //  2 │   text
     //    ·   ──┬─
@@ -54,9 +53,8 @@ static int example_2(void)
 
     puts("\n Example 2: Ascii theme \n");
 
-    // Error oops::my::bad
-    //  oops!
-    //    ,-[bad_file.rs:3:3]
+    // Error oops::my::bad oops!
+    //    ,-[bad_file.rs:2:3]
     //  1 | source
     //  2 |   text
     //    .   ----
@@ -103,9 +101,8 @@ static int example_3(void)
 
     puts("\n Example 3: Multiple labels \n");
 
-    // Error ts(2322)
-    //  Type 'string' is not assignable to type 'number'
-    //    ╭─[example.ts:2:17]
+    // Error ts(2322) Type 'string' is not assignable to type 'number'
+    //    ╭─[example.ts:1:17]
     //  1 │ let x: number = "hello";
     //    ·        ───┬──   ───┬───
     //    ·           │        ╰── got 'string'
@@ -143,9 +140,9 @@ static int example_4(void)
 
     puts("\n Example 4: Warning with URL \n");
 
-    // Warning W0602 (https://docs.python.org/3/library/subprocess.html)
-    //  os.popen() is deprecated since Python 3.0
-    //    ╭─[app.py:3:13]
+    // Warning W0602 os.popen() is deprecated since Python 3.0
+    //  https://docs.python.org/3/library/subprocess.html
+    //    ╭─[app.py:2:13]
     //  1 │ import os
     //  2 │ result = os.popen('ls')
     //    ·             ──┬──
@@ -183,9 +180,8 @@ static int example_5(void)
 
     puts("\n Example 5: Info note\n");
 
-    // Info note::feature_x
-    //  Feature X is available
-    //    ╭─[config.toml:2:1]
+    // Info note::feature_x Feature X is available
+    //    ╭─[config.toml:1:1]
     //  1 │ enable_feature = false
     //    · ───────┬──────
     //    ·        ╰── toggle here
@@ -221,9 +217,8 @@ static int example_6(void)
 
     puts("\n Example 6: Simple error\n");
 
-    // Error math::precedence
-    //  Wrong answer
-    //    ╭─[math.txt:2:13]
+    // Error math::precedence Wrong answer
+    //    ╭─[math.txt:1:13]
     //  1 │ 2 + 2 * 2 = 8
     //    ·             ┬
     //    ·             ╰── this should be 6
@@ -258,9 +253,8 @@ static int example_7(void)
 
     puts("\n Example 7: Related reports \n");
 
-    // Error root::err
-    //  Top-level error referencing a note
-    //    ╭─[lib.rs:4:5]
+    // Error root::err Top-level error referencing a note
+    //    ╭─[lib.rs:3:5]
     //  1 │ fn call_old() {
     //  2 │     // deprecated usage
     //  3 │     old_api();
@@ -271,9 +265,8 @@ static int example_7(void)
     //    ╰────
     //  Fix: Replace call_old -> call_new or update usage
     //
-    // Info note::related
-    //  This is a related note
-    //    ╭─[note.txt:3:1]
+    // Info note::related This is a related note
+    //    ╭─[note.txt:2:1]
     //  1 │ This helper explains why this API is deprecated:
     //  2 │ Use new_api() instead.
     //    · ───────────┬──────────
@@ -324,9 +317,8 @@ static int example_8(void)
 
     puts("\n Example 8: Custom theme and colors \n");
 
-    // Info theme::info
-    //  Custom themed info
-    //    ,-[theme.conf:3:1]
+    // Info theme::info Custom themed info
+    //    ,-[theme.conf:2:1]
     //  1 | [settings]
     //  2 | enable_feature = true
     //    . --------------
@@ -381,7 +373,7 @@ static int example_9(void)
     puts("\n Example 9: Tab width and context lines \n");
 
     //  Tab-handling example
-    //    ╭─[tabs.txt:2:2]
+    //    ╭─[tabs.txt:1:2]
     //  1 │         fn main() {
     //    ·         ─┬
     //    ·          ╰── call site
@@ -423,9 +415,8 @@ static int example_10(void)
 
     puts("\n Example 10: Multiline span \n");
 
-    // Error E0308
-    //  mismatched types
-    //    ╭─[script.rs:3:13]
+    // Error E0308 mismatched types
+    //    ╭─[script.rs:2:13]
     //  1 │ fn main() {
     //  2 │     let x = vec![
     //    ·             ╭─^
@@ -466,9 +457,8 @@ static int example_11(void)
 
     puts("\n Example 11: Three labels (long) \n");
 
-    // Error sql::type_check
-    //  3 type errors found in query
-    //    ╭─[query.sql:2:48]
+    // Error sql::type_check 3 type errors found in query
+    //    ╭─[query.sql:1:48]
     //  1 │ SELECT name, age, email FROM users WHERE age > 'thirty' AND active = 7.5 AND role IN 42
     //    ·                                                ────┬───              ─┬─             ─┬
     //    ·                                                    │                  │               ╰── expected list, got integer
@@ -506,9 +496,8 @@ static int example_12(void)
 
     puts("\n Example 12: Three labels (short) \n");
 
-    // Error sql::type
-    //  Type mismatch in query
-    //    ╭─[short.sql:2:35]
+    // Error sql::type Type mismatch in query
+    //    ╭─[short.sql:1:35]
     //  1 │ SELECT age FROM users WHERE age > 'thirty'
     //    ·                       ──┬── ─┬─   ────┬───
     //    ·                         │    │        ╰── expected integer
@@ -547,9 +536,8 @@ static int example_13(void)
 
     puts("\n Example 13: Longer function With multiple labels \n");
 
-    // Error cpp::fn_issue
-    //  Multiple issues in function
-    //    ╭─[bigfn.cpp:4:9]
+    // Error cpp::fn_issue Multiple issues in function
+    //    ╭─[bigfn.cpp:3:9]
     //  1 │ int add(int a, int b) {
     //  2 │     int unused = 42;
     //    ·         ───┬──
